@@ -3,7 +3,7 @@
 Retail and wholesale pharmacy on Odoo 19: medicines, supplements, prescriptions,
 dispensing, suppliers, wholesale credit control, controlled drugs, expiry and insurance.
 
-Built **on top of** native Odoo rather than beside it — medicines are products, patients
+Built **on top of** native Odoo rather than beside it - medicines are products, patients
 and suppliers are contacts, batches are stock lots. That is what lets Inventory, Purchase,
 Sales, POS and Accounting work on pharmacy data without a parallel stack.
 
@@ -18,14 +18,14 @@ Sales, POS and Accounting work on pharmacy data without a parallel stack.
 ### Requirements
 
 Odoo 19 with `stock`, `purchase`, `sale_management`, `account`, `point_of_sale` and
-`barcodes` available. `product_expiry` is pulled in automatically — it is what gives lots
+`barcodes` available. `product_expiry` is pulled in automatically - it is what gives lots
 an expiration date and enables FEFO removal, which is the backbone of stock rotation here.
 
 ### Install
 
 1. Copy the `sahal_pharmacy` folder into your Odoo **addons path**.
 2. Restart the Odoo service.
-3. **Apps → Update Apps List**, search for the module and click **Install**.
+3. **Apps -> Update Apps List**, search for the module and click **Install**.
 
 Or from the command line:
 
@@ -45,7 +45,7 @@ odoo -d <database> -u sahal_pharmacy --stop-after-init
   so the app is not invisible the moment it is installed.
 * Loads dosage forms, routes and a starter catalogue of active ingredients.
 * Creates the sequences for prescriptions, dispensings and returns.
-* Installs five scheduled actions. **All are internal** — they email pharmacy staff, never
+* Installs five scheduled actions. **All are internal** - they email pharmacy staff, never
   a customer:
 
   | Cron | Does |
@@ -70,7 +70,7 @@ Each suite rolls its transaction back, so this is safe on a working database.
 
 ## 2. Roles
 
-Assign under **Settings → Users → *user* → Pharmacy**. Roles build on each other — a
+Assign under **Settings -> Users -> *user* -> Pharmacy**. Roles build on each other - a
 Pharmacist can do everything a Technician and Cashier can.
 
 | Role | Can do |
@@ -78,7 +78,7 @@ Pharmacist can do everything a Technician and Cashier can.
 | **Cashier** | Sell OTC medicines and take payment. **Cannot** verify prescriptions or handle controlled drugs. |
 | **Technician** | Everything above, plus prepare and dispense non-controlled prescriptions. |
 | **Pharmacist** | Verify prescriptions, sign off clinical warnings, dispense controlled drugs and sign the register. |
-| **Manager** | Full access — set up medicines, release credit holds, authorise overrides, run reports. |
+| **Manager** | Full access - set up medicines, release credit holds, authorise overrides, run reports. |
 | **Auditor** | Read-only across the register, dispensing history and the override log, for compliance checks. |
 
 > **Creating a cashier-only user:** give them **Cashier** and nothing else. They will see
@@ -94,9 +94,9 @@ Do these once, in this order.
 ### 3.1 Add a medicine
 
 Medicines are products, so anything added here can be purchased, stocked, sold and
-invoiced like any product — with the pharmaceutical detail on top.
+invoiced like any product - with the pharmaceutical detail on top.
 
-1. **Pharmacy → Catalogue → Medicines → New**.
+1. **Pharmacy -> Catalogue -> Medicines -> New**.
 2. Set **Pharma Type**: Prescription, OTC, Supplement, Medical Device or Cosmetic. This is
    what drives the selling rules.
 3. Tick **Requires Prescription** and/or **Controlled** where they apply.
@@ -107,18 +107,18 @@ invoiced like any product — with the pharmaceutical detail on top.
 
 ### 3.2 Receive stock with batches
 
-1. **Purchase → New**, choosing an **approved, licensed** supplier (see §5).
+1. **Purchase -> New**, choosing an **approved, licensed** supplier (see Section 5).
 2. Receive the shipment. On the receipt, enter the **lot number and expiry date** for each
    medicine.
 3. Validate. The batch is now dispensable, and FEFO will offer it in expiry order.
 
 ### 3.3 Set up the till
 
-1. **Point of Sale → Configuration → Point of Sale**, open the till.
+1. **Point of Sale -> Configuration -> Point of Sale**, open the till.
 2. Tick **Pharmacy Point of Sale** (needs the Manager role to see it).
 
 Only a till with this ticked loads pharmacy data or pharmacy behaviour. Every other POS on
-the platform — restaurant, hotel, hardware — is completely unaffected.
+the platform - restaurant, hotel, hardware - is completely unaffected.
 
 ---
 
@@ -131,7 +131,7 @@ verified prescription is attached, warns on near-expiry batches, and blocks expi
 
 ### Dispensing a prescription
 
-1. **Pharmacy → Dispensing → Prescriptions → New**. Add the patient, prescriber, validity and each
+1. **Pharmacy -> Dispensing -> Prescriptions -> New**. Add the patient, prescriber, validity and each
    medicine with dose and quantity.
 2. Click **Check Clinical Safety**. Allergies are matched on the **active ingredient**, so
    a brand nobody typed is still caught, and interactions are checked across the whole
@@ -141,19 +141,19 @@ verified prescription is attached, warns on near-expiry batches, and blocks expi
 4. **Verify** (Pharmacist only), then **Dispense**. Dispensing creates a real sale order,
    moves real stock, and captures the batch handed over.
 
-Partial dispensing and refills are supported — the remaining quantity stays on the script.
+Partial dispensing and refills are supported - the remaining quantity stays on the script.
 
 ### Controlled drugs
 
 Every movement writes to the register automatically. A pharmacist must be the one to hand
-them over, and disposal requires a witness. **Pharmacy → Compliance → Controlled Drugs Register** is the
+them over, and disposal requires a witness. **Pharmacy -> Compliance -> Controlled Drugs Register** is the
 report to print for an inspection.
 
 ### Customer returns
 
-**Pharmacy → Customer Returns → New**. Record the batch and the condition it came back in. The
+**Pharmacy -> Customer Returns -> New**. Record the batch and the condition it came back in. The
 pharmacist's decision to **restock or destroy** is separate from whether the customer is
-refunded — a medicine that has left the premises usually cannot go back on the shelf even
+refunded - a medicine that has left the premises usually cannot go back on the shelf even
 when the refund is legitimate.
 
 ---
@@ -171,9 +171,9 @@ unlicensed vendor, per the enforcement setting.
 On the customer, set the **trading licence**, customer category, and tick **Approved to
 buy medicines**. Then:
 
-* **Credit control** — Odoo's credit limit, plus a **credit hold** only a Manager can
+* **Credit control** - Odoo's credit limit, plus a **credit hold** only a Manager can
   release.
-* **Order quantities** — minimum, maximum and whole-case multiples enforced on the order.
+* **Order quantities** - minimum, maximum and whole-case multiples enforced on the order.
 * Licence, credit and quantity are all checked on confirmation, with a **recorded manager
   override** where one is allowed.
 
@@ -185,8 +185,8 @@ buy medicines**. Then:
 
 ## 6. Expiry
 
-* **FEFO** — the earliest-expiring usable batch is suggested on the dispensing screen.
-* **Expired stock is refused**, at the till and at the counter — not merely flagged.
+* **FEFO** - the earliest-expiring usable batch is suggested on the dispensing screen.
+* **Expired stock is refused**, at the till and at the counter - not merely flagged.
   Policy can allow a recorded pharmacist override.
 * **Near-expiry alerts** run daily, and expiry is a reportable dimension with the stock
   value attached, so you can see what it is about to cost you.
@@ -195,20 +195,19 @@ buy medicines**. Then:
 
 ## 7. The dashboard
 
-**Pharmacy → Dashboard** shows takings today, invoiced this month, receivables, money
+**Pharmacy -> Dashboard** shows takings today, invoiced this month, receivables, money
 outstanding with insurers, colour-coded stock health (out / low / healthy with the shelf's
 value), expired and near-expiry lines with their cost, best sellers, sales mix, a 12-month
 takings chart, and an attention queue where every row opens the list behind it.
 
 The dashboard reports **only what the signed-in user is allowed to see**. It deliberately
-does not elevate its own queries, so a tile can never total something the user
-cannot open.
+does not elevate its own queries - see `docs/LESSONS_LEARNED.md` Section 41 for why that matters.
 
 ---
 
 ## 8. Settings
 
-System parameters under **Settings → Technical → System Parameters**. All have working
+System parameters under **Settings -> Technical -> System Parameters**. All have working
 defaults; change them only where local policy differs.
 
 | Parameter | Default | Effect |
@@ -224,7 +223,7 @@ defaults; change them only where local policy differs.
 
 ---
 
-## 9. Point of sale — the boundary that matters
+## 9. Point of sale - the boundary that matters
 
 **One POS serves every industry on this platform.** A restaurant, a hotel shop, a hardware
 counter and a pharmacy all run the same `point_of_sale` module and share its asset bundle.
@@ -232,7 +231,7 @@ So one rule governs everything here:
 
 > Nothing pharmaceutical reaches a till that is not flagged **Pharmacy Point of Sale**.
 
-That covers the fields loaded, the models loaded and the JavaScript — the client patch
+That covers the fields loaded, the models loaded and the JavaScript - the client patch
 returns immediately on a non-pharmacy till, before touching anything. This is not
 theoretical: an unconditional override in this module once broke every POS on the platform.
 
@@ -254,4 +253,4 @@ taxes, inventory valuation, pricelists, credit limits and POS payments.
 
 ## 11. Support
 
-* **User guide (PDF):** `docs/user_guides/10_Pharmacy.pdf` — written for staff, not developers.
+* **User guide (PDF):** `docs/user_guides/10_Pharmacy.pdf` - written for staff, not developers.
