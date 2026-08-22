@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Seed vocabulary. noupdate so a pharmacy that renames "Ampoule" or deactivates
+         a form it never stocks does not have its edit reverted by the next upgrade. -->
+    <data noupdate="1">
+
+        <!-- Routes first: dosage forms point at them. -->
+        <record id="route_oral" model="pharmacy.administration.route">
+            <field name="name">Oral</field><field name="code">PO</field>
+        </record>
+        <record id="route_topical" model="pharmacy.administration.route">
+            <field name="name">Topical</field><field name="code">TOP</field>
+        </record>
+        <record id="route_intravenous" model="pharmacy.administration.route">
+            <field name="name">Intravenous</field><field name="code">IV</field>
+        </record>
+        <record id="route_intramuscular" model="pharmacy.administration.route">
+            <field name="name">Intramuscular</field><field name="code">IM</field>
+        </record>
+        <record id="route_subcutaneous" model="pharmacy.administration.route">
+            <field name="name">Subcutaneous</field><field name="code">SC</field>
+        </record>
+        <record id="route_inhalation" model="pharmacy.administration.route">
+            <field name="name">Inhalation</field><field name="code">INH</field>
+        </record>
+        <record id="route_ophthalmic" model="pharmacy.administration.route">
+            <field name="name">Ophthalmic</field><field name="code">OPH</field>
+        </record>
+        <record id="route_otic" model="pharmacy.administration.route">
+            <field name="name">Otic</field><field name="code">OT</field>
+        </record>
+        <record id="route_nasal" model="pharmacy.administration.route">
+            <field name="name">Nasal</field><field name="code">NAS</field>
+        </record>
+        <record id="route_rectal" model="pharmacy.administration.route">
+            <field name="name">Rectal</field><field name="code">PR</field>
+        </record>
+        <record id="route_vaginal" model="pharmacy.administration.route">
+            <field name="name">Vaginal</field><field name="code">PV</field>
+        </record>
+        <record id="route_transdermal" model="pharmacy.administration.route">
+            <field name="name">Transdermal</field><field name="code">TD</field>
+        </record>
+
+        <!-- The PRD's list (section 8) in full, plus the ones it asks admins to add. -->
+        <record id="dosage_tablet" model="pharmacy.dosage.form">
+            <field name="name">Tablet</field><field name="code">TAB</field>
+            <field name="sequence">10</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_oral')])]"/>
+        </record>
+        <record id="dosage_capsule" model="pharmacy.dosage.form">
+            <field name="name">Capsule</field><field name="code">CAP</field>
+            <field name="sequence">20</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_oral')])]"/>
+        </record>
+        <record id="dosage_softgel" model="pharmacy.dosage.form">
+            <field name="name">Softgel</field><field name="code">SGC</field>
+            <field name="sequence">30</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_oral')])]"/>
+        </record>
+        <record id="dosage_syrup" model="pharmacy.dosage.form">
+            <field name="name">Syrup</field><field name="code">SYR</field>
+            <field name="sequence">40</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_oral')])]"/>
+        </record>
+        <record id="dosage_suspension" model="pharmacy.dosage.form">
+            <field name="name">Suspension</field><field name="code">SUS</field>
+            <field name="sequence">50</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_oral')])]"/>
+        </record>
+        <record id="dosage_solution" model="pharmacy.dosage.form">
+            <field name="name">Solution</field><field name="code">SOL</field>
+            <field name="sequence">60</field>
+        </record>
+        <record id="dosage_injection" model="pharmacy.dosage.form">
+            <field name="name">Injection</field><field name="code">INJ</field>
+            <field name="sequence">70</field><field name="is_injectable" eval="True"/>
+            <field name="route_ids"
+                   eval="[(6, 0, [ref('route_intravenous'), ref('route_intramuscular'), ref('route_subcutaneous')])]"/>
+        </record>
+        <record id="dosage_ampoule" model="pharmacy.dosage.form">
+            <field name="name">Ampoule</field><field name="code">AMP</field>
+            <field name="sequence">80</field><field name="is_injectable" eval="True"/>
+        </record>
+        <record id="dosage_vial" model="pharmacy.dosage.form">
+            <field name="name">Vial</field><field name="code">VIA</field>
+            <field name="sequence">90</field><field name="is_injectable" eval="True"/>
+        </record>
+        <record id="dosage_cream" model="pharmacy.dosage.form">
+            <field name="name">Cream</field><field name="code">CRM</field>
+            <field name="sequence">100</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_topical')])]"/>
+        </record>
+        <record id="dosage_ointment" model="pharmacy.dosage.form">
+            <field name="name">Ointment</field><field name="code">OIN</field>
+            <field name="sequence">110</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_topical')])]"/>
+        </record>
+        <record id="dosage_gel" model="pharmacy.dosage.form">
+            <field name="name">Gel</field><field name="code">GEL</field>
+            <field name="sequence">120</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_topical')])]"/>
+        </record>
+        <record id="dosage_lotion" model="pharmacy.dosage.form">
+            <field name="name">Lotion</field><field name="code">LOT</field>
+            <field name="sequence">130</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_topical')])]"/>
+        </record>
+        <record id="dosage_drops" model="pharmacy.dosage.form">
+            <field name="name">Drops</field><field name="code">DRP</field>
+            <field name="sequence">140</field>
+        </record>
+        <record id="dosage_eye_drops" model="pharmacy.dosage.form">
+            <field name="name">Eye Drops</field><field name="code">EYE</field>
+            <field name="sequence">150</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_ophthalmic')])]"/>
+        </record>
+        <record id="dosage_ear_drops" model="pharmacy.dosage.form">
+            <field name="name">Ear Drops</field><field name="code">EAR</field>
+            <field name="sequence">160</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_otic')])]"/>
+        </record>
+        <record id="dosage_nasal_spray" model="pharmacy.dosage.form">
+            <field name="name">Nasal Spray</field><field name="code">NSP</field>
+            <field name="sequence">170</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_nasal')])]"/>
+        </record>
+        <record id="dosage_inhaler" model="pharmacy.dosage.form">
+            <field name="name">Inhaler</field><field name="code">INH</field>
+            <field name="sequence">180</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_inhalation')])]"/>
+        </record>
+        <record id="dosage_suppository" model="pharmacy.dosage.form">
+            <field name="name">Suppository</field><field name="code">SUP</field>
+            <field name="sequence">190</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_rectal')])]"/>
+        </record>
+        <record id="dosage_powder" model="pharmacy.dosage.form">
+            <field name="name">Powder</field><field name="code">POW</field>
+            <field name="sequence">200</field>
+        </record>
+        <record id="dosage_granules" model="pharmacy.dosage.form">
+            <field name="name">Granules</field><field name="code">GRA</field>
+            <field name="sequence">210</field>
+        </record>
+        <record id="dosage_patch" model="pharmacy.dosage.form">
+            <field name="name">Transdermal Patch</field><field name="code">PAT</field>
+            <field name="sequence">220</field>
+            <field name="route_ids" eval="[(6, 0, [ref('route_transdermal')])]"/>
+        </record>
+        <record id="dosage_spray" model="pharmacy.dosage.form">
+            <field name="name">Spray</field><field name="code">SPR</field>
+            <field name="sequence">230</field>
+        </record>
+        <record id="dosage_bottle" model="pharmacy.dosage.form">
+            <field name="name">Bottle</field><field name="code">BOT</field>
+            <field name="sequence">240</field>
+        </record>
+        <record id="dosage_sachet" model="pharmacy.dosage.form">
+            <field name="name">Sachet</field><field name="code">SAC</field>
+            <field name="sequence">250</field>
+        </record>
+        <record id="dosage_infusion" model="pharmacy.dosage.form">
+            <field name="name">Infusion</field><field name="code">INF</field>
+            <field name="sequence">260</field><field name="is_injectable" eval="True"/>
+            <field name="route_ids" eval="[(6, 0, [ref('route_intravenous')])]"/>
+        </record>
+        <record id="dosage_other" model="pharmacy.dosage.form">
+            <field name="name">Other</field><field name="code">OTH</field>
+            <field name="sequence">999</field>
+        </record>
+
+    </data>
+</odoo>

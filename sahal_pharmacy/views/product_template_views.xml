@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Pharmaceutical attributes on the product form. A dedicated page rather than
+         scattered fields, and hidden entirely unless the product is a medicine, so a
+         pharmacy that also sells cosmetics is not forced through clinical fields. -->
+    <record id="product_template_form_pharmacy" model="ir.ui.view">
+        <field name="name">product.template.form.pharmacy</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='type']" position="before">
+                <field name="is_medicine"/>
+                <field name="pharma_type" invisible="not is_medicine"/>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Pharmacy" name="pharmacy" invisible="not is_medicine">
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not is_controlled">
+                        <i class="fa fa-exclamation-triangle me-1" title="Warning"/>
+                        <strong>Controlled substance.</strong>
+                        Only a pharmacist may dispense this, and every movement is
+                        written to the controlled drugs register.
+                    </div>
+                    <group>
+                        <group string="Identification">
+                            <field name="generic_id"
+                                   invisible="pharma_type in ('device', 'cosmetic', 'other')"/>
+                            <field name="pharma_generic_name"/>
+                            <field name="brand_name"/>
+                            <field name="manufacturer_id"/>
+                            <field name="country_of_origin_id"/>
+                            <field name="gtin"/>
+                            <field name="pack_size"/>
+                        </group>
+                        <group string="Dispensing Control">
+                            <field name="requires_prescription"
+                                   readonly="pharma_type in ('supplement', 'device', 'cosmetic', 'other')"/>
+                            <field name="is_otc"/>
+                            <field name="is_controlled"
+                                   readonly="pharma_type in ('supplement', 'device', 'cosmetic', 'other')"/>
+                            <field name="controlled_schedule"
+                                   invisible="not is_controlled"
+                                   required="is_controlled"/>
+                        </group>
+                    </group>
+                    <group invisible="pharma_type in ('device', 'cosmetic', 'other')">
+                        <group string="Pharmacology">
+                            <field name="active_ingredient_ids" widget="many2many_tags"/>
+                            <field name="dosage_form_id"/>
+                            <field name="route_id"/>
+                            <label for="strength_value" string="Strength"/>
+                            <div class="o_row">
+                                <field name="strength_value" nolabel="1"
+                                       class="oe_inline" placeholder="500"/>
+                                <field name="strength_uom" nolabel="1" class="oe_inline"/>
+                            </div>
+                            <field name="strength" string="Strength (label)"/>
+                            <field name="concentration"/>
+                        </group>
+                        <group string="Classification">
+                            <field name="atc_code"/>
+                            <field name="therapeutic_class"/>
+                            <field name="drug_class"/>
+                            <field name="dosage_form" string="Dosage Form (legacy)"
+                                   invisible="not dosage_form" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Handling"
+                           invisible="pharma_type in ('cosmetic', 'other')">
+                        <group>
+                            <field name="is_antibiotic"/>
+                            <field name="is_high_alert"/>
+                            <field name="is_hazardous"/>
+                        </group>
+                        <group>
+                            <field name="is_pediatric"/>
+                            <field name="is_veterinary"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Storage">
+                            <field name="requires_cold_storage"/>
+                            <label for="temperature_min" string="Temperature range (°C)"/>
+                            <div class="o_row">
+                                <field name="temperature_min" nolabel="1" class="oe_inline"/>
+                                <span class="mx-1">to</span>
+                                <field name="temperature_max" nolabel="1" class="oe_inline"/>
+                            </div>
+                            <field name="storage_instructions" placeholder="e.g. Store below 25 °C, protect from light"/>
+                        </group>
+                        <group string="Batch &amp; Expiry">
+                            <!-- Native product_expiry / stock fields, surfaced here so a
+                                 pharmacist configures shelf life in one place. -->
+                            <field name="tracking"/>
+                            <field name="use_expiration_date"/>
+                            <field name="expiration_time"
+                                   invisible="not use_expiration_date"/>
+                            <field name="shelf_life_warning" invisible="1"/>
+                            <div class="text-danger" colspan="2"
+                                 invisible="not shelf_life_warning">
+                                <i class="fa fa-exclamation-triangle me-1" title="Warning"/>
+                                No shelf life set: every batch received would be dated
+                                today and treated as expired.
+                            </div>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_template_list_pharmacy" model="ir.ui.view">
+        <field name="name">product.template.list.pharmacy</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="pharma_type" optional="show"/>
+                <field name="pharma_generic_name" optional="show"/>
+                <field name="generic_id" optional="hide"/>
+                <field name="strength" optional="show"/>
+                <field name="dosage_form_id" optional="hide"/>
+                <field name="requires_prescription" optional="hide"/>
+                <field name="is_controlled" optional="hide"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="product_template_search_pharmacy" model="ir.ui.view">
+        <field name="name">product.template.search.pharmacy</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="pharma_generic_name"/>
+                <field name="brand_name"/>
+                <field name="active_ingredient_ids"/>
+                <field name="generic_id"/>
+                <filter name="f_prescription" string="Prescription"
+                        domain="[('pharma_type', '=', 'prescription')]"/>
+                <filter name="f_otc" string="Over the Counter"
+                        domain="[('pharma_type', '=', 'otc')]"/>
+                <filter name="f_supplement" string="Supplements"
+                        domain="[('pharma_type', '=', 'supplement')]"/>
+                <filter name="f_device" string="Medical Devices"
+                        domain="[('pharma_type', '=', 'device')]"/>
+                <separator/>
+            </field>
+            <filter name="services" position="after">
+                <separator/>
+                <filter name="filter_medicines" string="Medicines"
+                        domain="[('is_medicine', '=', True)]"/>
+                <filter name="filter_rx_only" string="Prescription Only"
+                        domain="[('requires_prescription', '=', True)]"/>
+                <filter name="filter_controlled" string="Controlled Drugs"
+                        domain="[('is_controlled', '=', True)]"/>
+                <filter name="filter_cold_chain" string="Cold Chain"
+                        domain="[('requires_cold_storage', '=', True)]"/>
+            </filter>
+        </field>
+    </record>
+
+    <!-- Medicine catalogue: the same product model, scoped to medicines so pharmacy
+         staff are never shown unrelated stock. -->
+    <record id="action_medicine_catalog" model="ir.actions.act_window">
+        <field name="name">Medicines</field>
+        <field name="res_model">product.template</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('is_medicine', '=', True)]</field>
+        <field name="context">{'default_is_medicine': True, 'default_pharma_type': 'otc', 'default_tracking': 'lot', 'default_use_expiration_date': True, 'default_sale_ok': True, 'default_available_in_pos': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add your first medicine</p>
+            <p>Medicines are products, so purchasing, stock, batches and invoicing all
+               work on them natively. Tick <b>Is a Medicine</b> to reveal the
+               pharmaceutical attributes.</p>
+        </field>
+    </record>
+
+</odoo>

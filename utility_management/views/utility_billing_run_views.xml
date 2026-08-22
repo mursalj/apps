@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_utility_billing_run_list" model="ir.ui.view">
+        <field name="name">utility.billing.run.list</field>
+        <field name="model">utility.billing.run</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancel'"
+                  decoration-warning="state == 'review' and warning_text"
+                  decoration-success="state == 'invoiced'">
+                <field name="name"/>
+                <field name="period_start"/>
+                <field name="period_end"/>
+                <field name="billing_cycle_id" optional="show"/>
+                <field name="utility_type" optional="show"/>
+                <field name="account_count"/>
+                <field name="total_consumption" sum="Consumption"/>
+                <field name="total_amount" sum="Billed"/>
+                <field name="variance_percent" optional="show"/>
+                <field name="estimated_count" optional="hide"/>
+                <field name="exception_count" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="warning_text" column_invisible="1"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'review'"
+                       decoration-success="state in ('approved', 'invoiced')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_utility_billing_run_form" model="ir.ui.view">
+        <field name="name">utility.billing.run.form</field>
+        <field name="model">utility.billing.run</field>
+        <field name="arch" type="xml">
+            <form string="Billing Run">
+                <header>
+                    <button name="action_compute" type="object" string="Compute"
+                            class="btn-primary" invisible="state not in ('draft', 'review')"/>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="btn-primary" invisible="state != 'review'"
+                            groups="utility_management.group_utility_manager"
+                            confirm="Approving locks every reading in this run. Continue?"/>
+                    <button name="action_generate_invoices" type="object"
+                            string="Generate Invoices" class="btn-primary"
+                            invisible="state != 'approved'"/>
+                    <button name="action_notify_customers" type="object"
+                            string="Notify Customers" invisible="state != 'invoiced'"
+                            confirm="This emails or messages every customer on this run. Continue?"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft"
+                            invisible="state in ('draft', 'invoiced')"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('cancel', 'invoiced')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,review,approved,invoiced"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoices" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not invoice_count">
+                            <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                        </button>
+                    </div>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not warning_text">
+                        <strong>Review before approving</strong>
+                        <field name="warning_text" nolabel="1" readonly="1"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Scope">
+                            <field name="period_start"/>
+                            <field name="period_end"/>
+                            <field name="billing_cycle_id"/>
+                            <field name="utility_type"/>
+                            <field name="account_ids" widget="many2many_tags"/>
+                        </group>
+                        <group string="Options">
+                            <field name="create_estimates"/>
+                            <field name="apply_penalties"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Totals">
+                            <field name="account_count"/>
+                            <field name="line_count"/>
+                            <field name="total_consumption"/>
+                            <field name="total_amount"/>
+                        </group>
+                        <group string="Quality">
+                            <field name="estimated_count"/>
+                            <field name="exception_count"/>
+                            <field name="zero_count"/>
+                            <field name="previous_run_id"/>
+                            <field name="variance_percent"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines" name="lines">
+                            <field name="line_ids" readonly="1">
+                                <list decoration-warning="exception_state == 'review' or is_estimated"
+                                      decoration-danger="exception_state in ('invalid', 'tampering')"
+                                      decoration-muted="not reading_id">
+                                    <field name="account_id"/>
+                                    <field name="partner_id" optional="show"/>
+                                    <field name="meter_id"/>
+                                    <field name="reading_id" optional="hide"/>
+                                    <field name="previous_reading"/>
+                                    <field name="present_reading"/>
+                                    <field name="consumption" sum="Consumption"/>
+                                    <field name="amount" sum="Billed"/>
+                                    <field name="is_estimated"/>
+                                    <field name="exception_state"/>
+                                    <field name="invoice_id" optional="show"/>
+                                    <field name="note" optional="show"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Approval" name="approval">
+                            <group>
+                                <group>
+                                    <field name="prepared_by" readonly="1"/>
+                                    <field name="prepared_on" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="approved_by" readonly="1"/>
+                                    <field name="approved_on" readonly="1"/>
+                                </group>
+                            </group>
+                            <field name="note" placeholder="Anything the reviewer should know"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_utility_billing_run_search" model="ir.ui.view">
+        <field name="name">utility.billing.run.search</field>
+        <field name="model">utility.billing.run</field>
+        <field name="arch" type="xml">
+            <search string="Billing Runs">
+                <field name="name"/>
+                <field name="billing_cycle_id"/>
+                <filter name="f_review" string="Awaiting Review" domain="[('state','=','review')]"/>
+                <filter name="f_approved" string="Approved" domain="[('state','=','approved')]"/>
+                <filter name="f_invoiced" string="Invoiced" domain="[('state','=','invoiced')]"/>
+                <separator/>
+                <filter name="f_warned" string="With Warnings" domain="[('warning_text','!=',False)]"/>
+                <group name="group_by" colspan="16">
+                    <filter name="g_state" string="Status" context="{'group_by':'state'}"/>
+                    <filter name="g_cycle" string="Cycle" context="{'group_by':'billing_cycle_id'}"/>
+                    <filter name="g_period" string="Period" context="{'group_by':'period_end:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_utility_billing_run" model="ir.actions.act_window">
+        <field name="name">Billing Runs</field>
+        <field name="res_model">utility.billing.run</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_utility_billing_run_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Start a billing run</p>
+            <p>A run computes what every account owes for a period, shows you the totals
+               and how they compare with last month, and only then — once a manager has
+               approved it — produces invoices.</p>
+        </field>
+    </record>
+
+</odoo>

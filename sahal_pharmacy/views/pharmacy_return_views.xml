@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_pharmacy_return_list" model="ir.ui.view">
+        <field name="name">pharmacy.return.list</field>
+        <field name="model">pharmacy.return</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancel'"
+                  decoration-success="state == 'refunded'">
+                <field name="name"/>
+                <field name="return_date"/>
+                <field name="partner_id"/>
+                <field name="reason"/>
+                <field name="restock_count" string="Restocked"/>
+                <field name="destroy_count" string="Destroyed"/>
+                <field name="refund_amount" sum="Refunded"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="pharmacist_id" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'approved'"
+                       decoration-success="state in ('done', 'refunded')"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pharmacy_return_form" model="ir.ui.view">
+        <field name="name">pharmacy.return.form</field>
+        <field name="model">pharmacy.return</field>
+        <field name="arch" type="xml">
+            <form string="Customer Return">
+                <header>
+                    <button name="action_approve" type="object" string="Accept Return"
+                            class="btn-primary" invisible="state != 'draft'"
+                            groups="sahal_pharmacy.group_pharmacy_pharmacist"/>
+                    <button name="action_process" type="object" string="Process Stock"
+                            class="btn-primary" invisible="state != 'approved'"/>
+                    <button name="action_refund" type="object" string="Refund Customer"
+                            invisible="state not in ('approved', 'done') or credit_note_id"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft"
+                            invisible="state in ('draft', 'done', 'refunded')"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('cancel', 'refunded')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,approved,done,refunded"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-info" role="alert" invisible="state == 'cancel'">
+                        Returned medicine goes back on sale only when it comes back
+                        <strong>sealed and in date</strong>, and only because a pharmacist
+                        says so. Refunding the customer and restocking the pack are
+                        separate decisions.
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="return_date"/>
+                            <field name="reason"/>
+                        </group>
+                        <group>
+                            <field name="dispense_id"/>
+                            <field name="invoice_id"/>
+                            <field name="pharmacist_id" readonly="1"
+                                   invisible="not pharmacist_id"/>
+                            <field name="credit_note_id" readonly="1"
+                                   invisible="not credit_note_id"/>
+                            <field name="picking_id" readonly="1"
+                                   invisible="not picking_id"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" readonly="state != 'draft'">
+                        <list editable="bottom" decoration-danger="not restock">
+                            <field name="product_id"/>
+                            <field name="lot_id"/>
+                            <field name="expiration_date" readonly="1" optional="show"/>
+                            <field name="quantity"/>
+                            <field name="unit_price"/>
+                            <field name="condition"/>
+                            <field name="restock" string="Back to Stock"/>
+                            <field name="refund"/>
+                            <field name="note" optional="hide"/>
+                        </list>
+                    </field>
+                    <group class="oe_subtotal_footer">
+                        <field name="restock_count"/>
+                        <field name="destroy_count"/>
+                        <field name="refund_amount"/>
+                    </group>
+                    <field name="reason_note" placeholder="What the customer said, and what was decided"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pharmacy_return_search" model="ir.ui.view">
+        <field name="name">pharmacy.return.search</field>
+        <field name="model">pharmacy.return</field>
+        <field name="arch" type="xml">
+            <search string="Customer Returns">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <filter name="f_draft" string="To Accept" domain="[('state','=','draft')]"/>
+                <filter name="f_to_process" string="To Process" domain="[('state','=','approved')]"/>
+                <filter name="f_recall" string="Recall Returns" domain="[('reason','=','recall')]"/>
+                <filter name="f_adverse" string="Adverse Reactions"
+                        domain="[('reason','=','adverse_reaction')]"/>
+                <group name="group_by" colspan="16">
+                    <filter name="g_reason" string="Reason" context="{'group_by':'reason'}"/>
+                    <filter name="g_state" string="Status" context="{'group_by':'state'}"/>
+                    <filter name="g_month" string="Month" context="{'group_by':'return_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_return" model="ir.actions.act_window">
+        <field name="name">Customer Returns</field>
+        <field name="res_model">pharmacy.return</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pharmacy_return_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Record a return</p>
+            <p>With the batch, the condition it came back in, and a pharmacist's decision
+               on whether it can ever be sold again.</p>
+        </field>
+    </record>
+
+</odoo>

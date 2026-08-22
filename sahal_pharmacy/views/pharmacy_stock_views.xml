@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Server actions rather than act_windows: each list is a QUESTION whose answer
+         changes hourly, so the domain is computed when the menu is clicked. -->
+    <record id="action_server_out_of_stock" model="ir.actions.server">
+        <field name="name">Out of Stock</field>
+        <field name="model_id" ref="model_pharmacy_stock_intelligence"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_out_of_stock()</field>
+    </record>
+
+    <record id="action_server_low_stock" model="ir.actions.server">
+        <field name="name">Low Stock</field>
+        <field name="model_id" ref="model_pharmacy_stock_intelligence"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_low_stock()</field>
+    </record>
+
+    <record id="action_server_dead_stock" model="ir.actions.server">
+        <field name="name">Dead Stock</field>
+        <field name="model_id" ref="model_pharmacy_stock_intelligence"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_dead_stock()</field>
+    </record>
+
+    <record id="action_server_expiry_loss" model="ir.actions.server">
+        <field name="name">Expiry Loss</field>
+        <field name="model_id" ref="model_pharmacy_stock_intelligence"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_expiry_loss()</field>
+    </record>
+</odoo>

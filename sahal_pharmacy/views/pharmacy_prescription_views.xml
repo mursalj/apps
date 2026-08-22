@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_pharmacy_prescription_form" model="ir.ui.view">
+        <field name="name">pharmacy.prescription.form</field>
+        <field name="model">pharmacy.prescription</field>
+        <field name="arch" type="xml">
+            <form string="Prescription">
+                <header>
+                    <button name="action_submit" type="object" string="Submit"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_verify" type="object" string="Verify"
+                            class="btn-primary"
+                            invisible="state not in ('draft', 'to_verify')"
+                            groups="sahal_pharmacy.group_pharmacy_pharmacist"/>
+                    <button name="action_open_dispense_wizard" type="object"
+                            string="Dispense" class="btn-primary"
+                            invisible="state not in ('verified', 'partially_dispensed')"/>
+                    <button name="action_start_refill" type="object" string="Start Refill"
+                            class="btn-secondary"
+                            invisible="state != 'dispensed' or refills_remaining &lt;= 0"/>
+                    <button name="action_reset_to_draft" type="object" string="Reset to Draft"
+                            invisible="state in ('draft', 'dispensed')"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('cancelled', 'dispensed')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,to_verify,verified,dispensed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_dispensings" type="object"
+                                class="oe_stat_button" icon="fa-truck">
+                            <field name="dispense_count" widget="statinfo" string="Dispensings"/>
+                        </button>
+                    </div>
+
+                    <!-- The two things a pharmacist must not miss, at the top. -->
+                    <div class="alert alert-danger" role="alert"
+                         invisible="not patient_allergies">
+                        <i class="fa fa-exclamation-triangle me-1" title="Warning"/>
+                        <strong>Patient allergies:</strong>
+                        <field name="patient_allergies" nolabel="1" readonly="1" class="oe_inline"/>
+                    </div>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not has_controlled">
+                        <i class="fa fa-lock me-1" title="Restricted"/>
+                        Contains a <strong>controlled substance</strong> — pharmacist
+                        dispensing only; every movement is logged to the register.
+                    </div>
+                    <div class="alert alert-secondary" role="alert"
+                         invisible="not is_expired or state in ('dispensed', 'cancelled')">
+                        <i class="fa fa-clock-o me-1" title="Expired"/>
+                        This prescription is past its validity date and can no longer be
+                        dispensed.
+                    </div>
+
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id"
+                                   readonly="state not in ('draft', 'to_verify')"/>
+                            <field name="doctor_id"
+                                   readonly="state not in ('draft', 'to_verify')"/>
+                            <field name="diagnosis"/>
+                        </group>
+                        <group>
+                            <field name="prescription_date"/>
+                            <field name="valid_until"/>
+                            <field name="is_digital"/>
+                            <field name="scan_file" filename="scan_filename"
+                                   widget="binary" string="Scanned Script"/>
+                            <field name="scan_filename" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Refills">
+                            <field name="refills_allowed"/>
+                            <field name="refills_used" readonly="1"/>
+                            <field name="refills_remaining" readonly="1"/>
+                        </group>
+                        <group string="Verification">
+                            <field name="verified_by_id" readonly="1"/>
+                            <field name="verified_on" readonly="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Medicines" name="lines">
+                            <field name="line_ids"
+                                   readonly="state not in ('draft', 'to_verify')">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="qty_prescribed"/>
+                                    <field name="uom_id" optional="show"/>
+                                    <field name="qty_dispensed" readonly="1"/>
+                                    <field name="qty_remaining" readonly="1"/>
+                                    <field name="dosage"/>
+                                    <field name="frequency"/>
+                                    <field name="duration_days" optional="hide"/>
+                                    <field name="instructions" optional="show"/>
+                                    <field name="substitution_allowed" optional="hide"/>
+                                    <field name="is_controlled" optional="hide" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Dispensings" name="dispensings">
+                            <field name="dispense_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="dispense_date"/>
+                                    <field name="pharmacist_id"/>
+                                    <field name="sale_order_id"/>
+                                    <field name="state"/>
+                                    <field name="is_previous_cycle" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Clinical notes…"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pharmacy_prescription_list" model="ir.ui.view">
+        <field name="name">pharmacy.prescription.list</field>
+        <field name="model">pharmacy.prescription</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="is_expired and state not in ('dispensed','cancelled')"
+                  decoration-warning="state == 'to_verify'"
+                  decoration-muted="state in ('cancelled', 'expired')">
+                <field name="name"/>
+                <field name="prescription_date"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="valid_until" optional="show"/>
+                <field name="has_controlled" optional="show"/>
+                <field name="refills_remaining" optional="hide"/>
+                <field name="dispense_count" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'dispensed'"
+                       decoration-info="state == 'verified'"
+                       decoration-warning="state == 'to_verify'"/>
+                <field name="is_expired" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pharmacy_prescription_search" model="ir.ui.view">
+        <field name="name">pharmacy.prescription.search</field>
+        <field name="model">pharmacy.prescription</field>
+        <field name="arch" type="xml">
+            <search string="Prescriptions">
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <filter name="filter_to_verify" string="Awaiting Verification"
+                        domain="[('state', '=', 'to_verify')]"/>
+                <filter name="filter_dispensable" string="Ready to Dispense"
+                        domain="[('state', 'in', ('verified', 'partially_dispensed'))]"/>
+                <filter name="filter_controlled" string="Controlled"
+                        domain="[('has_controlled', '=', True)]"/>
+                <separator/>
+                <filter name="filter_refillable" string="Refillable"
+                        domain="[('state', '=', 'dispensed'), ('refills_remaining', '>', 0)]"/>
+                <filter name="filter_expired" string="Expired"
+                        domain="[('state', '=', 'expired')]"/>
+                <separator/>
+                <filter name="filter_this_month" string="This Month"
+                        domain="[('prescription_date', '&gt;=', (context_today().replace(day=1)).strftime('%Y-%m-%d'))]"/>
+                <group name="group_by" colspan="16">
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_patient" string="Patient" context="{'group_by': 'patient_id'}"/>
+                    <filter name="group_doctor" string="Prescriber" context="{'group_by': 'doctor_id'}"/>
+                    <filter name="group_date" string="Prescription Month"
+                            context="{'group_by': 'prescription_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_prescription" model="ir.actions.act_window">
+        <field name="name">Prescriptions</field>
+        <field name="res_model">pharmacy.prescription</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_pharmacy_prescription_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Record your first prescription</p>
+            <p>A prescription is a clinical authorisation. Once a pharmacist verifies it,
+               dispensing creates a real sale order and moves stock — so inventory always
+               reflects what left the shelf.</p>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_prescription_to_verify" model="ir.actions.act_window">
+        <field name="name">To Verify</field>
+        <field name="res_model">pharmacy.prescription</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('state', '=', 'to_verify')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Nothing awaiting verification</p>
+        </field>
+    </record>
+
+</odoo>

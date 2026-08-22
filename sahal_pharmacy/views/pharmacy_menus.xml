@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Every leaf below carries its own action. A menu that has children renders as a
+         non-clickable section header in Odoo 19, so section items are deliberately
+         action-free and the real screens sit one level down. -->
+
+    <menuitem id="menu_pharmacy_root"
+              name="Pharmacy"
+              web_icon="sahal_pharmacy,static/description/icon.png"
+              groups="sahal_pharmacy.group_pharmacy_cashier"
+              sequence="45"/>
+
+    <!-- Dispensing -->
+    <menuitem id="menu_pharmacy_dispensing"
+              name="Dispensing"
+              parent="menu_pharmacy_root"
+              sequence="10"/>
+
+    <menuitem id="menu_pharmacy_prescriptions"
+              name="Prescriptions"
+              action="action_pharmacy_prescription"
+              parent="menu_pharmacy_dispensing"
+              sequence="10"/>
+
+    <menuitem id="menu_pharmacy_to_verify"
+              name="To Verify"
+              action="action_pharmacy_prescription_to_verify"
+              parent="menu_pharmacy_dispensing"
+              groups="sahal_pharmacy.group_pharmacy_pharmacist"
+              sequence="20"/>
+
+    <menuitem id="menu_pharmacy_dispensings"
+              name="Dispensings"
+              action="action_pharmacy_dispense"
+              parent="menu_pharmacy_dispensing"
+              sequence="30"/>
+
+    <!-- Catalogue -->
+    <menuitem id="menu_pharmacy_catalog"
+              name="Catalogue"
+              parent="menu_pharmacy_root"
+              sequence="20"/>
+
+    <menuitem id="menu_pharmacy_medicines"
+              name="Medicines"
+              action="action_medicine_catalog"
+              parent="menu_pharmacy_catalog"
+              sequence="10"/>
+
+    <!-- Contacts -->
+    <menuitem id="menu_pharmacy_contacts"
+              name="Contacts"
+              parent="menu_pharmacy_root"
+              sequence="30"/>
+
+    <menuitem id="menu_pharmacy_patients"
+              name="Patients"
+              action="action_pharmacy_patients"
+              parent="menu_pharmacy_contacts"
+              sequence="10"/>
+
+    <menuitem id="menu_pharmacy_doctors"
+              name="Prescribers"
+              action="action_pharmacy_doctors"
+              parent="menu_pharmacy_contacts"
+              sequence="20"/>
+
+    <!-- Compliance -->
+    <menuitem id="menu_pharmacy_compliance"
+              name="Compliance"
+              parent="menu_pharmacy_root"
+              groups="sahal_pharmacy.group_pharmacy_pharmacist,sahal_pharmacy.group_pharmacy_auditor"
+              sequence="40"/>
+
+    <menuitem id="menu_pharmacy_controlled_register"
+              name="Controlled Drugs Register"
+              action="action_controlled_log"
+              parent="menu_pharmacy_compliance"
+              groups="sahal_pharmacy.group_pharmacy_pharmacist,sahal_pharmacy.group_pharmacy_auditor"
+              sequence="10"/>
+
+    <menuitem id="menu_pharmacy_substitutions"
+              name="Substitutions"
+              action="action_substitution"
+              parent="menu_pharmacy_compliance"
+              sequence="15"/>
+
+    <menuitem id="menu_pharmacy_documents"
+              name="Regulatory Documents"
+              action="action_pharmacy_document"
+              parent="menu_pharmacy_compliance"
+              sequence="16"/>
+
+    <menuitem id="menu_pharmacy_overrides"
+              name="Authorised Overrides"
+              action="action_pharmacy_override"
+              parent="menu_pharmacy_compliance"
+              sequence="17"/>
+
+    <menuitem id="menu_pharmacy_near_expiry"
+              name="Near-Expiry Stock"
+              action="action_near_expiry_stock"
+              parent="menu_pharmacy_compliance"
+              sequence="20"/>
+
+    <menuitem id="menu_pharmacy_expired"
+              name="Expired Stock"
+              action="action_expired_stock"
+              parent="menu_pharmacy_compliance"
+              sequence="30"/>
+
+    <menuitem id="menu_pharmacy_insurance_claims"
+              name="Insurance Claims"
+              action="action_insurance_claim"
+              parent="menu_pharmacy_dispensing"
+              sequence="35"/>
+
+    <menuitem id="menu_pharmacy_customer_returns"
+              name="Customer Returns"
+              action="action_pharmacy_return"
+              parent="menu_pharmacy_dispensing"
+              sequence="40"/>
+
+    <!-- Wholesale -->
+    <menuitem id="menu_pharmacy_wholesale"
+              name="Wholesale"
+              parent="menu_pharmacy_root"
+              groups="sahal_pharmacy.group_pharmacy_technician"
+              sequence="30"/>
+
+    <menuitem id="menu_pharmacy_wholesale_customers"
+              name="Wholesale Customers"
+              action="action_wholesale_customers"
+              parent="menu_pharmacy_wholesale"
+              sequence="10"/>
+
+    <!-- Purchasing -->
+    <menuitem id="menu_pharmacy_purchasing"
+              name="Purchasing"
+              parent="menu_pharmacy_root"
+              groups="sahal_pharmacy.group_pharmacy_technician"
+              sequence="35"/>
+
+    <menuitem id="menu_pharmacy_suppliers"
+              name="Suppliers"
+              action="action_pharmacy_suppliers"
+              parent="menu_pharmacy_purchasing"
+              sequence="10"/>
+
+    <menuitem id="menu_pharmacy_supplier_returns"
+              name="Returns to Supplier"
+              action="action_supplier_return"
+              parent="menu_pharmacy_purchasing"
+              sequence="20"/>
+
+    <!-- Reporting -->
+    <menuitem id="menu_pharmacy_reporting"
+              name="Reporting"
+              parent="menu_pharmacy_root"
+              groups="sahal_pharmacy.group_pharmacy_manager,sahal_pharmacy.group_pharmacy_auditor"
+              sequence="80"/>
+
+    <menuitem id="menu_pharmacy_out_of_stock"
+              name="Out of Stock"
+              action="action_server_out_of_stock"
+              parent="menu_pharmacy_reporting"
+              sequence="4"/>
+
+    <menuitem id="menu_pharmacy_low_stock"
+              name="Low Stock"
+              action="action_server_low_stock"
+              parent="menu_pharmacy_reporting"
+              sequence="5"/>
+
+    <menuitem id="menu_pharmacy_dead_stock"
+              name="Dead Stock"
+              action="action_server_dead_stock"
+              parent="menu_pharmacy_reporting"
+              sequence="6"/>
+
+    <menuitem id="menu_pharmacy_expiry_loss"
+              name="Expiry Loss"
+              action="action_server_expiry_loss"
+              parent="menu_pharmacy_reporting"
+              sequence="7"/>
+
+    <menuitem id="menu_pharmacy_sales_analysis"
+              name="Sales Analysis"
+              action="action_pharmacy_sales_analysis"
+              parent="menu_pharmacy_reporting"
+              sequence="10"/>
+
+    <menuitem id="menu_pharmacy_stock_analysis"
+              name="Stock &amp; Expiry"
+              action="action_pharmacy_stock_analysis"
+              parent="menu_pharmacy_reporting"
+              sequence="20"/>
+
+    <menuitem id="menu_pharmacy_wholesale_credit"
+              name="Credit &amp; Receivables"
+              action="action_wholesale_credit"
+              parent="menu_pharmacy_reporting"
+              sequence="30"/>
+
+    <menuitem id="menu_pharmacy_supplier_return_analysis"
+              name="Supplier Returns"
+              action="action_supplier_return_analysis"
+              parent="menu_pharmacy_reporting"
+              sequence="40"/>
+
+    <!-- Configuration: the pharmaceutical vocabulary the PRD requires admins to own -->
+    <menuitem id="menu_pharmacy_config"
+              name="Configuration"
+              parent="menu_pharmacy_root"
+              groups="sahal_pharmacy.group_pharmacy_manager"
+              sequence="90"/>
+
+    <menuitem id="menu_pharmacy_profiles"
+              name="Pharmacies"
+              action="action_pharmacy_profile"
+              parent="menu_pharmacy_config"
+              sequence="5"/>
+
+    <menuitem id="menu_pharmacy_manufacturers"
+              name="Manufacturers"
+              action="action_pharmacy_manufacturer"
+              parent="menu_pharmacy_config"
+              sequence="7"/>
+
+    <menuitem id="menu_pharmacy_generics"
+              name="Generics"
+              action="action_pharmacy_generic"
+              parent="menu_pharmacy_config"
+              sequence="10"/>
+
+    <menuitem id="menu_pharmacy_ingredients"
+              name="Active Ingredients"
+              action="action_pharmacy_ingredient"
+              parent="menu_pharmacy_config"
+              sequence="20"/>
+
+    <menuitem id="menu_pharmacy_interactions"
+              name="Drug Interactions"
+              action="action_drug_interaction"
+              parent="menu_pharmacy_config"
+              sequence="25"/>
+
+    <menuitem id="menu_pharmacy_dosage_forms"
+              name="Dosage Forms"
+              action="action_pharmacy_dosage_form"
+              parent="menu_pharmacy_config"
+              sequence="30"/>
+
+    <menuitem id="menu_pharmacy_routes"
+              name="Routes of Administration"
+              action="action_pharmacy_route"
+              parent="menu_pharmacy_config"
+              sequence="40"/>
+
+</odoo>

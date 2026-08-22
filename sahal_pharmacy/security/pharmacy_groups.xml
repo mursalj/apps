@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="module_category_pharmacy" model="ir.module.category">
+            <field name="name">Pharmacy</field>
+            <field name="description">Retail and wholesale pharmacy management</field>
+            <field name="sequence">22</field>
+        </record>
+
+        <!-- Odoo 19 groups a set of roles under a res.groups.privilege rather than
+             hanging each group off ir.module.category directly (res.groups.category_id
+             no longer exists). One privilege = one radio-button row in Settings. -->
+        <record id="res_groups_privilege_pharmacy" model="res.groups.privilege">
+            <field name="name">Pharmacy</field>
+            <field name="category_id" ref="module_category_pharmacy"/>
+        </record>
+
+        <!-- Roles from BRD section 4. Modelled as an escalating chain
+             (cashier -> technician -> pharmacist -> manager) so a manager
+             automatically holds everything below, and no user needs several ticks.
+
+             Note what is NOT here: System Administrator, Inventory Officer,
+             Purchasing Officer, Storekeeper, Delivery Driver and Accountant already
+             exist as native Odoo groups (Settings, Inventory, Purchase, Sales,
+             Accounting). Duplicating them would fragment access control. -->
+
+        <record id="group_pharmacy_cashier" model="res.groups">
+            <field name="name">Cashier</field>
+            <field name="sequence">10</field>
+            <field name="privilege_id" ref="res_groups_privilege_pharmacy"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Sells over-the-counter medicines and takes payment.
+                Cannot verify prescriptions or touch controlled substances.</field>
+        </record>
+
+        <record id="group_pharmacy_technician" model="res.groups">
+            <field name="name">Technician</field>
+            <field name="sequence">20</field>
+            <field name="privilege_id" ref="res_groups_privilege_pharmacy"/>
+            <field name="implied_ids" eval="[(4, ref('group_pharmacy_cashier'))]"/>
+            <field name="comment">Prepares prescriptions and dispenses non-controlled
+                medicines. Verification still requires a pharmacist.</field>
+        </record>
+
+        <record id="group_pharmacy_pharmacist" model="res.groups">
+            <field name="name">Pharmacist</field>
+            <field name="sequence">30</field>
+            <field name="privilege_id" ref="res_groups_privilege_pharmacy"/>
+            <field name="implied_ids" eval="[(4, ref('group_pharmacy_technician'))]"/>
+            <field name="comment">Verifies prescriptions, dispenses controlled drugs and
+                signs the controlled drugs register.</field>
+        </record>
+
+        <record id="group_pharmacy_manager" model="res.groups">
+            <field name="name">Manager</field>
+            <field name="sequence">40</field>
+            <field name="privilege_id" ref="res_groups_privilege_pharmacy"/>
+            <field name="implied_ids" eval="[(4, ref('group_pharmacy_pharmacist'))]"/>
+            <field name="comment">Full pharmacy configuration, disposal approval and
+                regulatory reporting.</field>
+        </record>
+
+        <!-- Read-only compliance role. Intentionally NOT in the chain above: an
+             auditor reviews the register without gaining the right to dispense. -->
+        <record id="group_pharmacy_auditor" model="res.groups">
+            <field name="name">Auditor (read-only)</field>
+            <field name="sequence">50</field>
+            <field name="privilege_id" ref="res_groups_privilege_pharmacy"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Read-only access to the controlled drugs register,
+                dispensing history and audit trail.</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,56 @@
+/* Pharmacy dashboard. Backend only — never loaded by the point of sale. */
+.o_pharmacy_dashboard {
+    padding: 16px;
+}
+
+.o_pharmacy_dashboard .o_pd_card {
+    border: 1px solid rgba(128, 128, 128, 0.22);
+    border-radius: 8px;
+    padding: 14px 16px;
+    height: 100%;
+    background: var(--o-view-background-color, #fff);
+}
+
+.o_pharmacy_dashboard .o_pd_label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.7;
+}
+
+.o_pharmacy_dashboard .o_pd_value {
+    font-size: 1.6rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.o_pharmacy_dashboard .o_pd_sub {
+    font-size: 0.85rem;
+    opacity: 0.75;
+}
+
+/* Colour carries meaning here: red is stock a patient cannot be given today. */
+.o_pharmacy_dashboard .o_pd_success { color: #0b8043; }
+.o_pharmacy_dashboard .o_pd_warning { color: #b45309; }
+.o_pharmacy_dashboard .o_pd_danger  { color: #b91c1c; }
+.o_pharmacy_dashboard .o_pd_info    { color: #1d4ed8; }
+
+.o_pharmacy_dashboard .o_pd_border_success { border-left: 4px solid #0b8043; }
+.o_pharmacy_dashboard .o_pd_border_warning { border-left: 4px solid #f59e0b; }
+.o_pharmacy_dashboard .o_pd_border_danger  { border-left: 4px solid #ef4444; }
+.o_pharmacy_dashboard .o_pd_border_info    { border-left: 4px solid #3b82f6; }
+
+.o_pharmacy_dashboard .o_pd_clickable { cursor: pointer; }
+.o_pharmacy_dashboard .o_pd_clickable:hover { background: rgba(128, 128, 128, 0.06); }
+
+.o_pharmacy_dashboard .o_pd_chart {
+    position: relative;
+    height: 260px;
+}
+
+.o_pharmacy_dashboard table.o_pd_table {
+    width: 100%;
+    font-size: 0.9rem;
+}
+.o_pharmacy_dashboard table.o_pd_table td { padding: 4px 0; }
+.o_pharmacy_dashboard table.o_pd_table td.o_pd_right { text-align: right; white-space: nowrap; }

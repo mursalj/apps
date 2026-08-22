@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================== Sales by product type (PRD 78) =================== -->
+    <record id="view_sale_report_pharmacy_pivot" model="ir.ui.view">
+        <field name="name">sale.report.pivot.pharmacy</field>
+        <field name="model">sale.report</field>
+        <field name="arch" type="xml">
+            <pivot string="Pharmacy Sales" sample="1">
+                <field name="pharma_type" type="row"/>
+                <field name="date" interval="month" type="col"/>
+                <field name="price_subtotal" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_sale_report_pharmacy_graph" model="ir.ui.view">
+        <field name="name">sale.report.graph.pharmacy</field>
+        <field name="model">sale.report</field>
+        <field name="arch" type="xml">
+            <graph string="Pharmacy Sales" sample="1">
+                <field name="date" interval="month"/>
+                <field name="pharma_type"/>
+                <field name="price_subtotal" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_sale_report_pharmacy_search" model="ir.ui.view">
+        <field name="name">sale.report.search.pharmacy</field>
+        <field name="model">sale.report</field>
+        <field name="arch" type="xml">
+            <search string="Pharmacy Sales">
+                <field name="product_id"/>
+                <field name="partner_id"/>
+                <filter name="f_rx" string="Prescription"
+                        domain="[('pharma_type', '=', 'prescription')]"/>
+                <filter name="f_otc" string="Over the Counter"
+                        domain="[('pharma_type', '=', 'otc')]"/>
+                <filter name="f_supplement" string="Supplements"
+                        domain="[('pharma_type', '=', 'supplement')]"/>
+                <separator/>
+                <filter name="f_wholesale" string="Wholesale"
+                        domain="[('is_wholesale_customer', '=', True)]"/>
+                <filter name="f_retail" string="Retail"
+                        domain="[('is_wholesale_customer', '=', False)]"/>
+                <filter name="f_controlled" string="Controlled Drugs"
+                        domain="[('is_controlled', '=', True)]"/>
+                <group name="group_by" colspan="16">
+                    <filter name="g_type" string="Product Type"
+                            context="{'group_by': 'pharma_type'}"/>
+                    <filter name="g_generic" string="Generic"
+                            context="{'group_by': 'generic_id'}"/>
+                    <filter name="g_form" string="Dosage Form"
+                            context="{'group_by': 'dosage_form_id'}"/>
+                    <filter name="g_customer_type" string="Customer Type"
+                            context="{'group_by': 'wholesale_category'}"/>
+                    <filter name="g_partner" string="Customer"
+                            context="{'group_by': 'partner_id'}"/>
+                    <filter name="g_month" string="Month"
+                            context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_sales_analysis" model="ir.actions.act_window">
+        <field name="name">Sales Analysis</field>
+        <field name="res_model">sale.report</field>
+        <field name="view_mode">pivot,graph,list</field>
+        <field name="domain">[('is_medicine', '=', True)]</field>
+        <field name="search_view_id" ref="view_sale_report_pharmacy_search"/>
+        <field name="context">{'search_default_g_type': 1}</field>
+    </record>
+
+    <!-- ================== Stock and expiry value (PRD 79, 63) ================ -->
+    <record id="view_quant_pharmacy_pivot" model="ir.ui.view">
+        <field name="name">stock.quant.pivot.pharmacy</field>
+        <field name="model">stock.quant</field>
+        <field name="arch" type="xml">
+            <pivot string="Pharmacy Stock" sample="1">
+                <field name="product_id" type="row"/>
+                <field name="quantity" type="measure"/>
+                <field name="stock_value" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_quant_pharmacy_list" model="ir.ui.view">
+        <field name="name">stock.quant.list.pharmacy</field>
+        <field name="model">stock.quant</field>
+        <field name="arch" type="xml">
+            <list create="false" decoration-danger="expiry_status == 'expired'"
+                  decoration-warning="expiry_status == 'near'">
+                <field name="product_id"/>
+                <field name="pharma_type" optional="show"/>
+                <field name="lot_id"/>
+                <field name="location_id"/>
+                <field name="quantity" sum="Quantity"/>
+                <field name="stock_value" sum="Value"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="days_to_expiry"/>
+                <field name="expiry_status" widget="badge"
+                       decoration-success="expiry_status == 'valid'"
+                       decoration-warning="expiry_status == 'near'"
+                       decoration-danger="expiry_status == 'expired'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_quant_pharmacy_search" model="ir.ui.view">
+        <field name="name">stock.quant.search.pharmacy</field>
+        <field name="model">stock.quant</field>
+        <field name="arch" type="xml">
+            <search string="Pharmacy Stock">
+                <field name="product_id"/>
+                <field name="lot_id"/>
+                <field name="location_id"/>
+                <filter name="f_expired" string="Expired"
+                        domain="[('expiry_status', '=', 'expired')]"/>
+                <filter name="f_near" string="Near Expiry"
+                        domain="[('expiry_status', '=', 'near')]"/>
+                <filter name="f_internal" string="In Stock"
+                        domain="[('location_id.usage', '=', 'internal'), ('quantity', '>', 0)]"/>
+                <group name="group_by" colspan="16">
+                    <filter name="g_product" string="Product"
+                            context="{'group_by': 'product_id'}"/>
+                    <filter name="g_type" string="Product Type"
+                            context="{'group_by': 'pharma_type'}"/>
+                    <filter name="g_location" string="Location"
+                            context="{'group_by': 'location_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_stock_analysis" model="ir.actions.act_window">
+        <field name="name">Stock &amp; Expiry Analysis</field>
+        <field name="res_model">stock.quant</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="domain">[('product_id.is_medicine', '=', True), ('location_id.usage', '=', 'internal')]</field>
+        <field name="search_view_id" ref="view_quant_pharmacy_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_quant_pharmacy_list')}),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_quant_pharmacy_pivot')})]"/>
+    </record>
+
+    <!-- ================= Wholesale receivables and credit (PRD 81) =========== -->
+    <record id="view_wholesale_credit_list" model="ir.ui.view">
+        <field name="name">res.partner.list.wholesale.credit</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <list create="false" decoration-danger="credit_hold"
+                  decoration-warning="credit_used_pct &gt; 80">
+                <field name="display_name" string="Customer"/>
+                <field name="wholesale_category"/>
+                <field name="credit_limit" sum="Limit"/>
+                <field name="credit" string="Owing" sum="Owing"/>
+                <field name="credit_available" sum="Available"/>
+                <field name="credit_used_pct" widget="percentage"/>
+                <field name="credit_hold"/>
+                <field name="wholesale_licence_state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_wholesale_credit" model="ir.actions.act_window">
+        <field name="name">Credit &amp; Receivables</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('is_wholesale_customer', '=', True)]</field>
+        <field name="view_id" ref="view_wholesale_credit_list"/>
+    </record>
+
+    <!-- ==================== Supplier returns analysis (PRD 82) =============== -->
+    <record id="view_supplier_return_pivot" model="ir.ui.view">
+        <field name="name">pharmacy.supplier.return.pivot</field>
+        <field name="model">pharmacy.supplier.return</field>
+        <field name="arch" type="xml">
+            <pivot string="Returns to Supplier" sample="1">
+                <field name="partner_id" type="row"/>
+                <field name="reason" type="col"/>
+                <field name="total_value" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_supplier_return_analysis" model="ir.actions.act_window">
+        <field name="name">Supplier Returns Analysis</field>
+        <field name="res_model">pharmacy.supplier.return</field>
+        <field name="view_mode">pivot,list,form</field>
+        <field name="search_view_id" ref="view_supplier_return_search"/>
+        <field name="context">{'search_default_g_supplier': 1}</field>
+    </record>
+
+</odoo>

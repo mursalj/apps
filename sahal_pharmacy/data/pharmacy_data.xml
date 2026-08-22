@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- How far ahead the near-expiry report and alert cron look. Tunable per
+             pharmacy without touching code: shorter for fast-moving retail, longer
+             for wholesale where stock sits before distribution. -->
+        <record id="config_near_expiry_days" model="ir.config_parameter">
+            <field name="key">sahal_pharmacy.near_expiry_days</field>
+            <field name="value">90</field>
+        </record>
+
+        <!-- Enforce prescription-only medicines at the point of sale. A wholesale
+             pharmacy selling to licensed retailers may legitimately turn this off;
+             doing so is then a deliberate, recorded choice. -->
+        <record id="config_enforce_prescription" model="ir.config_parameter">
+            <field name="key">sahal_pharmacy.enforce_prescription</field>
+            <field name="value">True</field>
+        </record>
+
+        <!-- Medicine product category, so pharmacy stock can be valued and reported
+             separately from other goods a pharmacy sells (cosmetics, devices).
+
+             removal_strategy_id = FEFO is the important line: stock_quant checks the
+             product category's strategy FIRST, ahead of the location's, so every
+             medicine in this category automatically picks the earliest-expiring batch.
+             That is BRD 5.2/5.8 satisfied by configuration rather than custom code.
+
+             FIFO costing matches how pharmacy stock actually flows and keeps
+             inventory valuation consistent with batch rotation. -->
+        <record id="product_category_medicine" model="product.category">
+            <field name="name">Medicines</field>
+            <field name="property_cost_method">fifo</field>
+            <field name="removal_strategy_id" ref="product_expiry.removal_fefo"/>
+        </record>
+
+    </data>
+    <data noupdate="1">
+        <!-- How hard to push back when a medicine is ordered from a supplier who is
+             not approved, or whose licence has lapsed: off | warn | block.
+             'warn' by default — blocking a delivery is a business decision a pharmacy
+             should make deliberately, not inherit from a module. -->
+        <record id="config_supplier_enforcement" model="ir.config_parameter">
+            <field name="key">sahal_pharmacy.supplier_enforcement</field>
+            <field name="value">warn</field>
+        </record>
+
+        <!-- Medicine holding stock that nothing has taken out in this many days is
+             reported as dead stock: cash on a shelf, heading for expiry. -->
+        <record id="config_dead_stock_days" model="ir.config_parameter">
+            <field name="key">sahal_pharmacy.dead_stock_days</field>
+            <field name="value">120</field>
+        </record>
+
+        <!-- Shelf life given to a new medicine when none is stated, in days. Without
+             one, product_expiry dates every batch today and the stock is born expired. -->
+        <record id="config_default_shelf_life_days" model="ir.config_parameter">
+            <field name="key">sahal_pharmacy.default_shelf_life_days</field>
+            <field name="value">730</field>
+        </record>
+
+        <!-- Expired medicine may not be sold. Configurable because a few
+             jurisdictions permit exceptional handling; a pharmacist override is
+             recorded either way. -->
+        <record id="config_block_expired_sales" model="ir.config_parameter">
+            <field name="key">sahal_pharmacy.block_expired_sales</field>
+            <field name="value">True</field>
+        </record>
+
+        <!-- Wholesale confirmation: off | warn | block. Blocking by default —
+             confirming a wholesale order promises stock and creates a receivable, and
+             a manager can still override it on the record. -->
+        <record id="config_wholesale_enforcement" model="ir.config_parameter">
+            <field name="key">sahal_pharmacy.wholesale_enforcement</field>
+            <field name="value">block</field>
+        </record>
+
+        <!-- Days before a supplier licence lapses that the pharmacy wants warning. -->
+        <record id="config_licence_alert_days" model="ir.config_parameter">
+            <field name="key">sahal_pharmacy.licence_alert_days</field>
+            <field name="value">60</field>
+        </record>
+    </data>
+
+</odoo>

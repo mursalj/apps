@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- The PRD's price tiers (section 49) as ordinary Odoo pricelists, because that is
+         what already applies automatically on quotations, sales orders and the till.
+         Empty of rules on purpose: the percentages are a commercial decision, and a
+         module that invents them would be quietly setting a pharmacy's margins. -->
+    <data noupdate="1">
+
+        <record id="pricelist_wholesale" model="product.pricelist">
+            <field name="name">Wholesale</field>
+            <field name="sequence">20</field>
+        </record>
+
+        <record id="pricelist_distributor" model="product.pricelist">
+            <field name="name">Distributor</field>
+            <field name="sequence">30</field>
+        </record>
+
+        <record id="pricelist_hospital" model="product.pricelist">
+            <field name="name">Hospital</field>
+            <field name="sequence">40</field>
+        </record>
+
+        <record id="pricelist_government" model="product.pricelist">
+            <field name="name">Government</field>
+            <field name="sequence">50</field>
+        </record>
+
+        <record id="pricelist_ngo" model="product.pricelist">
+            <field name="name">NGO</field>
+            <field name="sequence">60</field>
+        </record>
+
+    </data>
+</odoo>

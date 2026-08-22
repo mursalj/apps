@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================ Dosage forms ============================ -->
+    <record id="view_pharmacy_dosage_form_list" model="ir.ui.view">
+        <field name="name">pharmacy.dosage.form.list</field>
+        <field name="model">pharmacy.dosage.form</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="route_ids" widget="many2many_tags"/>
+                <field name="is_injectable"/>
+                <field name="product_count" string="Products"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_dosage_form" model="ir.actions.act_window">
+        <field name="name">Dosage Forms</field>
+        <field name="res_model">pharmacy.dosage.form</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a dosage form</p>
+            <p>Tablet, syrup, ampoule, pessary — whatever this pharmacy actually
+               stocks. Adding one here needs no code change.</p>
+        </field>
+    </record>
+
+    <!-- ======================== Routes of administration ===================== -->
+    <record id="view_pharmacy_route_list" model="ir.ui.view">
+        <field name="name">pharmacy.administration.route.list</field>
+        <field name="model">pharmacy.administration.route</field>
+        <field name="arch" type="xml">
+            <list editable="bottom">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_route" model="ir.actions.act_window">
+        <field name="name">Routes of Administration</field>
+        <field name="res_model">pharmacy.administration.route</field>
+        <field name="view_mode">list</field>
+    </record>
+
+    <!-- ========================== Active ingredients ========================= -->
+    <record id="view_pharmacy_ingredient_list" model="ir.ui.view">
+        <field name="name">pharmacy.active.ingredient.list</field>
+        <field name="model">pharmacy.active.ingredient</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="atc_code" optional="show"/>
+                <field name="therapeutic_class" optional="show"/>
+                <field name="is_antibiotic" optional="show"/>
+                <field name="allergy_alias" optional="hide"/>
+                <field name="product_count" string="Products"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pharmacy_ingredient_form" model="ir.ui.view">
+        <field name="name">pharmacy.active.ingredient.form</field>
+        <field name="model">pharmacy.active.ingredient</field>
+        <field name="arch" type="xml">
+            <form string="Active Ingredient">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_products" type="object"
+                                class="oe_stat_button" icon="fa-medkit">
+                            <field name="product_count" widget="statinfo" string="Products"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. Amoxicillin"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="atc_code"/>
+                            <field name="therapeutic_class"/>
+                        </group>
+                        <group>
+                            <field name="is_antibiotic"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <group string="Allergy Screening">
+                        <field name="allergy_alias" nolabel="1"
+                               placeholder="penicillin, beta-lactam"/>
+                    </group>
+                    <field name="description" placeholder="Notes for the pharmacist"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_ingredient" model="ir.actions.act_window">
+        <field name="name">Active Ingredients</field>
+        <field name="res_model">pharmacy.active.ingredient</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Record an active ingredient</p>
+            <p>The molecule, not the brand. Recording it is what lets the system answer
+               "what else contains this" and screen a patient's allergies.</p>
+        </field>
+    </record>
+
+    <!-- ============================== Generics ============================== -->
+    <record id="view_pharmacy_generic_list" model="ir.ui.view">
+        <field name="name">pharmacy.generic.list</field>
+        <field name="model">pharmacy.generic</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="strength" optional="show"/>
+                <field name="dosage_form_id" optional="show"/>
+                <field name="active_ingredient_ids" widget="many2many_tags" optional="show"/>
+                <field name="atc_code" optional="hide"/>
+                <field name="product_count" string="Brands"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_pharmacy_generic_form" model="ir.ui.view">
+        <field name="name">pharmacy.generic.form</field>
+        <field name="model">pharmacy.generic</field>
+        <field name="arch" type="xml">
+            <form string="Generic Medicine">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_products" type="object"
+                                class="oe_stat_button" icon="fa-tags">
+                            <field name="product_count" widget="statinfo" string="Brands"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. Amoxicillin 500 mg capsule"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="active_ingredient_ids" widget="many2many_tags"/>
+                            <field name="strength"/>
+                            <field name="dosage_form_id"/>
+                        </group>
+                        <group>
+                            <field name="atc_code"/>
+                            <field name="therapeutic_class"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <field name="product_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="brand_name"/>
+                            <field name="manufacturer_id"/>
+                            <field name="pharma_type"/>
+                            <field name="list_price"/>
+                        </list>
+                    </field>
+                    <field name="notes" placeholder="Substitution guidance for pharmacists"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_generic" model="ir.actions.act_window">
+        <field name="name">Generics</field>
+        <field name="res_model">pharmacy.generic</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create a generic</p>
+            <p>A generic groups the brands of the same medicine. Without it, nothing can
+               tell a pharmacist which products are equivalent.</p>
+        </field>
+    </record>
+
+</odoo>

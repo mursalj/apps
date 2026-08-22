@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_utility_meter_list" model="ir.ui.view">
+        <field name="name">utility.meter.list</field>
+        <field name="model">utility.meter</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'decommissioned'"
+                  decoration-warning="state == 'maintenance'">
+                <field name="name"/>
+                <field name="utility_type"/>
+                <field name="account_id" optional="show"/>
+                <field name="partner_id" optional="show"/>
+                <field name="effective_tariff_id" optional="show"/>
+                <field name="city" optional="hide"/>
+                <field name="meter_type" optional="hide"/>
+                <field name="communication_type" optional="hide"/>
+                <field name="last_reading" optional="show"/>
+                <field name="next_inspection" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state == 'maintenance'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_utility_meter_form" model="ir.ui.view">
+        <field name="name">utility.meter.form</field>
+        <field name="model">utility.meter</field>
+        <field name="arch" type="xml">
+            <form string="Meter">
+                <header>
+                    <button name="action_activate" type="object" string="Activate"
+                            class="btn-primary" invisible="state == 'active'"/>
+                    <button name="action_maintenance" type="object" string="Maintenance"
+                            invisible="state in ('maintenance', 'decommissioned')"/>
+                    <button name="action_mark_faulty" type="object" string="Mark Faulty"
+                            invisible="state in ('faulty', 'decommissioned')"/>
+                    <button name="action_replace" type="object" string="Replace Meter"
+                            invisible="not account_id"/>
+                    <button name="action_decommission" type="object" string="Decommission"
+                            invisible="state == 'decommissioned'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,active,maintenance"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_readings" type="object"
+                                class="oe_stat_button" icon="fa-tachometer">
+                            <field name="reading_count" widget="statinfo" string="Readings"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Meter serial / barcode"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="utility_type"/>
+                            <field name="account_id"
+                                   domain="[('utility_type', '=', utility_type)]"/>
+                            <field name="partner_id"/>
+                            <field name="tariff_id"
+                                   domain="[('utility_type', '=', utility_type)]"/>
+                            <field name="effective_tariff_id"
+                                   invisible="not effective_tariff_id"/>
+                        </group>
+                        <group>
+                            <field name="multiplier"/>
+                            <field name="digits"/>
+                            <field name="contract_start"/>
+                            <field name="contract_end"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Device" name="device">
+                            <group>
+                                <group>
+                                    <field name="meter_type"/>
+                                    <field name="manufacturer"/>
+                                    <field name="model_name"/>
+                                    <field name="communication_type"/>
+                                </group>
+                                <group>
+                                    <field name="installation_date"/>
+                                    <field name="initial_reading"/>
+                                    <field name="calibration_date"/>
+                                    <field name="last_inspection"/>
+                                    <field name="next_inspection"/>
+                                </group>
+                            </group>
+                            <field name="image" widget="image" class="oe_avatar"/>
+                        </page>
+                        <page string="Location" name="location">
+                            <group>
+                                <group>
+                                    <field name="street"/>
+                                    <field name="city"/>
+                                </group>
+                                <group>
+                                    <field name="latitude"/>
+                                    <field name="longitude"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Installation History" name="history">
+                            <field name="installation_ids" readonly="1">
+                                <list>
+                                    <field name="account_id"/>
+                                    <field name="date_installed"/>
+                                    <field name="date_removed"/>
+                                    <field name="initial_reading"/>
+                                    <field name="final_reading"/>
+                                    <field name="reason"/>
+                                    <field name="technician_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_utility_meter_search" model="ir.ui.view">
+        <field name="name">utility.meter.search</field>
+        <field name="model">utility.meter</field>
+        <field name="arch" type="xml">
+            <search string="Meters">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="city"/>
+                <filter name="f_active" string="Active" domain="[('state','=','active')]"/>
+                <field name="account_id"/>
+                <filter name="f_maint" string="Maintenance" domain="[('state','=','maintenance')]"/>
+                <filter name="f_faulty" string="Faulty" domain="[('state','=','faulty')]"/>
+                <filter name="f_unassigned" string="Unassigned" domain="[('account_id','=',False)]"/>
+                <filter name="f_inspection_due" string="Inspection Due"
+                        domain="[('next_inspection','&lt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="f_water" string="Water" domain="[('utility_type','=','water')]"/>
+                <filter name="f_elec" string="Electricity" domain="[('utility_type','=','electricity')]"/>
+                <filter name="f_gas" string="Gas" domain="[('utility_type','=','gas')]"/>
+                <filter name="f_net" string="Internet" domain="[('utility_type','=','internet')]"/>
+                <group name="group_by" colspan="16">
+                    <filter name="g_type" string="Utility" context="{'group_by':'utility_type'}"/>
+                    <filter name="g_state" string="Status" context="{'group_by':'state'}"/>
+                    <filter name="g_partner" string="Customer" context="{'group_by':'partner_id'}"/>
+                    <filter name="g_account" string="Service Account" context="{'group_by':'account_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_utility_meter" model="ir.actions.act_window">
+        <field name="name">Meters</field>
+        <field name="res_model">utility.meter</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_utility_meter_search"/>
+    </record>
+
+</odoo>

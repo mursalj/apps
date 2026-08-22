@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="seq_pharmacy_prescription" model="ir.sequence">
+            <field name="name">Pharmacy Prescription</field>
+            <field name="code">pharmacy.prescription</field>
+            <field name="prefix">RX/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_pharmacy_dispense" model="ir.sequence">
+            <field name="name">Pharmacy Dispensing</field>
+            <field name="code">pharmacy.dispense</field>
+            <field name="prefix">DSP/%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_pharmacy_patient" model="ir.sequence">
+            <field name="name">Pharmacy Patient</field>
+            <field name="code">pharmacy.patient</field>
+            <field name="prefix">PAT/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_pharmacy_controlled_log" model="ir.sequence">
+            <field name="name">Controlled Drugs Register</field>
+            <field name="code">pharmacy.controlled.log</field>
+            <field name="prefix">CDR/%(year)s/</field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+    <record id="seq_pharmacy_supplier_return" model="ir.sequence">
+        <field name="name">Pharmacy Supplier Return</field>
+        <field name="code">pharmacy.supplier.return</field>
+        <field name="prefix">SRET/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_pharmacy_return" model="ir.sequence">
+        <field name="name">Pharmacy Customer Return</field>
+        <field name="code">pharmacy.return</field>
+        <field name="prefix">CRET/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+    <record id="seq_pharmacy_insurance_claim" model="ir.sequence">
+        <field name="name">Pharmacy Insurance Claim</field>
+        <field name="code">pharmacy.insurance.claim</field>
+        <field name="prefix">CLM/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+
+</odoo>

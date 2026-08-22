@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="sahal_pharmacy.Dashboard">
+        <div class="o_pharmacy_dashboard">
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h2 class="mb-0">Pharmacy</h2>
+                <div class="btn-group btn-group-sm" role="group">
+                    <button class="btn btn-outline-secondary" t-att-class="state.months === 3 ? 'active' : ''"
+                            t-on-click="() => this.onPeriod(3)">3 months</button>
+                    <button class="btn btn-outline-secondary" t-att-class="state.months === 12 ? 'active' : ''"
+                            t-on-click="() => this.onPeriod(12)">12 months</button>
+                    <button class="btn btn-outline-secondary" t-on-click="() => this.load()">
+                        <i class="fa fa-refresh me-1"/>Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div t-if="state.loading" class="text-center py-5">
+                <i class="fa fa-circle-o-notch fa-spin fa-2x"/>
+            </div>
+
+            <t t-else="">
+                <!-- ============================ money ============================ -->
+                <div class="row g-3 mb-3">
+                    <div class="col-6 col-lg-3">
+                        <div class="o_pd_card o_pd_border_info">
+                            <div class="o_pd_label">Till takings today</div>
+                            <div class="o_pd_value" t-esc="money(state.data.kpis.takings_today)"/>
+                            <div class="o_pd_sub">
+                                <t t-esc="num(state.data.kpis.orders_today)"/> order(s)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="o_pd_card o_pd_border_info">
+                            <div class="o_pd_label">Invoiced this month</div>
+                            <div class="o_pd_value" t-esc="money(state.data.kpis.invoiced_month)"/>
+                            <div class="o_pd_sub">Sales orders and wholesale</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="o_pd_card o_pd_border_warning o_pd_clickable"
+                             t-on-click="() => this.open('receivables')">
+                            <div class="o_pd_label">Owed to us</div>
+                            <div class="o_pd_value o_pd_warning" t-esc="money(state.data.kpis.receivables)"/>
+                            <div class="o_pd_sub">Unpaid customer invoices</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="o_pd_card o_pd_border_info o_pd_clickable"
+                             t-on-click="() => this.open('claims')">
+                            <div class="o_pd_label">With insurers</div>
+                            <div class="o_pd_value" t-esc="money(state.data.kpis.insurance_outstanding)"/>
+                            <div class="o_pd_sub">Claims not yet paid</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ======================= stock and expiry ====================== -->
+                <div class="row g-3 mb-3">
+                    <div class="col-6 col-lg-3">
+                        <div class="o_pd_card o_pd_border_danger o_pd_clickable"
+                             t-on-click="() => this.open('out_of_stock')">
+                            <div class="o_pd_label">Out of stock</div>
+                            <div class="o_pd_value o_pd_danger" t-esc="num(state.data.stock.out_of_stock)"/>
+                            <div class="o_pd_sub">Cannot be dispensed today</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="o_pd_card o_pd_border_warning o_pd_clickable"
+                             t-on-click="() => this.open('low_stock')">
+                            <div class="o_pd_label">Low stock</div>
+                            <div class="o_pd_value o_pd_warning" t-esc="num(state.data.stock.low_stock)"/>
+                            <div class="o_pd_sub">At or below the reorder point</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="o_pd_card o_pd_border_success">
+                            <div class="o_pd_label">Healthy lines</div>
+                            <div class="o_pd_value o_pd_success" t-esc="num(state.data.stock.healthy)"/>
+                            <div class="o_pd_sub">
+                                of <t t-esc="num(state.data.stock.medicines)"/> ·
+                                stock worth <t t-esc="money(state.data.stock.stock_value)"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="o_pd_card"
+                             t-att-class="'o_pd_border_' + state.data.expiry.level">
+                            <div class="o_pd_label">Expiry</div>
+                            <div class="o_pd_value">
+                                <span class="o_pd_danger o_pd_clickable"
+                                      t-on-click="() => this.open('expired')"
+                                      t-esc="num(state.data.expiry.expired_lines)"/>
+                                <span class="o_pd_sub"> expired · </span>
+                                <span class="o_pd_warning o_pd_clickable"
+                                      t-on-click="() => this.open('near_expiry')"
+                                      t-esc="num(state.data.expiry.near_lines)"/>
+                                <span class="o_pd_sub"> soon</span>
+                            </div>
+                            <div class="o_pd_sub">
+                                <t t-esc="money(state.data.expiry.expired_value)"/> written off ·
+                                within <t t-esc="state.data.expiry.near_days"/> days
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ========================== dispensing ========================= -->
+                <div class="row g-3 mb-3">
+                    <div class="col-6 col-lg-3">
+                        <div class="o_pd_card">
+                            <div class="o_pd_label">Prescriptions today</div>
+                            <div class="o_pd_value" t-esc="num(state.data.kpis.prescriptions_today)"/>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="o_pd_card o_pd_clickable" t-on-click="() => this.open('to_verify')">
+                            <div class="o_pd_label">Awaiting verification</div>
+                            <div class="o_pd_value o_pd_warning" t-esc="num(state.data.kpis.to_verify)"/>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="o_pd_card">
+                            <div class="o_pd_label">Dispensed today</div>
+                            <div class="o_pd_value o_pd_success" t-esc="num(state.data.kpis.dispensed_today)"/>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="o_pd_card">
+                            <div class="o_pd_label">Controlled movements today</div>
+                            <div class="o_pd_value" t-esc="num(state.data.kpis.controlled_today)"/>
+                            <div class="o_pd_sub">Written to the register</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===================== charts and top sellers ================== -->
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-lg-8">
+                        <div class="o_pd_card">
+                            <div class="o_pd_label mb-2">Takings and invoiced sales</div>
+                            <div t-if="state.chartsOk" class="o_pd_chart">
+                                <canvas t-ref="salesChart"/>
+                            </div>
+                            <table t-else="" class="o_pd_table">
+                                <tr t-foreach="state.data.series" t-as="row" t-key="row.label">
+                                    <td t-esc="row.label"/>
+                                    <td class="o_pd_right" t-esc="money(row.retail)"/>
+                                    <td class="o_pd_right" t-esc="money(row.invoiced)"/>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <div class="o_pd_card">
+                            <div class="o_pd_label mb-2">Sales mix this month</div>
+                            <div t-if="state.chartsOk and state.data.mix.length" class="o_pd_chart">
+                                <canvas t-ref="mixChart"/>
+                            </div>
+                            <table t-else="" class="o_pd_table">
+                                <tr t-foreach="state.data.mix" t-as="row" t-key="row.label">
+                                    <td t-esc="row.label"/>
+                                    <td class="o_pd_right" t-esc="money(row.value)"/>
+                                </tr>
+                                <tr t-if="!state.data.mix.length">
+                                    <td class="o_pd_sub">Nothing sold yet this month.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-lg-6">
+                        <div class="o_pd_card">
+                            <div class="o_pd_label mb-2">Best sellers this month</div>
+                            <table class="o_pd_table">
+                                <tr t-foreach="state.data.top_products" t-as="item" t-key="item.id"
+                                    class="o_pd_clickable" t-on-click="() => this.openProduct(item.id)">
+                                    <td>
+                                        <t t-esc="item.name"/>
+                                        <span class="o_pd_sub" t-if="item.type"> · <t t-esc="item.type"/></span>
+                                    </td>
+                                    <td class="o_pd_right o_pd_sub" t-esc="num(item.qty)"/>
+                                    <td class="o_pd_right" t-esc="money(item.revenue)"/>
+                                </tr>
+                                <tr t-if="!state.data.top_products.length">
+                                    <td class="o_pd_sub">No sales recorded this month.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <div class="o_pd_card">
+                            <div class="o_pd_label mb-2">Needs attention</div>
+                            <table class="o_pd_table">
+                                <tr t-foreach="state.data.attention" t-as="row" t-key="row.key"
+                                    class="o_pd_clickable" t-on-click="() => this.open(row.key)">
+                                    <td t-esc="row.label"/>
+                                    <td class="o_pd_right">
+                                        <span t-att-class="'o_pd_' + row.level" t-esc="num(row.count)"/>
+                                    </td>
+                                </tr>
+                                <tr t-if="!state.data.attention.length">
+                                    <td class="o_pd_success">Nothing is waiting. </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </t>
+
+</templates>

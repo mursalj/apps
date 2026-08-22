@@ -1,0 +1,54 @@
+.o_utility_dashboard {
+    padding: 16px 20px 32px;
+    height: 100%;
+    overflow: auto;
+    background: var(--o-webclient-background-color, #f6f6f6);
+}
+.o_utility_dashboard .o_ud_header {
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+    justify-content: space-between; margin-bottom: 20px;
+}
+.o_utility_dashboard .o_ud_title { font-size: 22px; font-weight: 600; margin: 0; }
+.o_utility_dashboard .o_ud_subtitle { font-size: 13px; opacity: 0.65; }
+.o_utility_dashboard .o_ud_controls { display: flex; gap: 8px; align-items: center; }
+.o_utility_dashboard .o_ud_controls .form-select { width: auto; }
+.o_utility_dashboard .o_ud_loading { display: flex; justify-content: center; padding: 64px 0; opacity: 0.5; }
+
+.o_utility_dashboard .o_ud_kpis {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px; margin-bottom: 18px;
+}
+.o_utility_dashboard .o_ud_card, .o_utility_dashboard .o_ud_panel {
+    background: var(--o-view-background-color, #fff);
+    border: 1px solid rgba(128,128,128,0.18); border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.o_utility_dashboard .o_ud_card { padding: 16px 18px; }
+.o_utility_dashboard .o_ud_label {
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; margin-bottom: 6px;
+}
+.o_utility_dashboard .o_ud_value { font-size: 26px; font-weight: 600; line-height: 1.2; }
+.o_utility_dashboard .o_ud_hint { font-size: 12px; opacity: 0.7; margin-top: 6px; }
+.o_utility_dashboard .o_ud_pos { color: #0b8043; }
+.o_utility_dashboard .o_ud_neg { color: #c0392b; }
+.o_utility_dashboard .o_ud_click { cursor: pointer; transition: transform 0.12s ease, box-shadow 0.12s ease; }
+.o_utility_dashboard .o_ud_click:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.10); }
+
+.o_utility_dashboard .o_ud_charts {
+    display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 18px;
+}
+@media (max-width: 900px) { .o_utility_dashboard .o_ud_charts { grid-template-columns: 1fr; } }
+.o_utility_dashboard .o_ud_panel { padding: 16px 18px 18px; min-width: 0; }
+.o_utility_dashboard .o_ud_panel_head { margin-bottom: 12px; }
+.o_utility_dashboard .o_ud_panel_head h2 { font-size: 15px; font-weight: 600; margin: 0; }
+.o_utility_dashboard .o_ud_chart { position: relative; height: 280px; }
+
+.o_utility_dashboard .o_ud_table { width: 100%; font-size: 13px; border-collapse: collapse; }
+.o_utility_dashboard .o_ud_table th {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; opacity: 0.6;
+    font-weight: 600; padding: 6px 8px; border-bottom: 1px solid rgba(128,128,128,0.2);
+}
+.o_utility_dashboard .o_ud_table td { padding: 9px 8px; border-bottom: 1px solid rgba(128,128,128,0.12); }
+.o_utility_dashboard .o_ud_table tbody tr:last-child td { border-bottom: none; }
+.o_utility_dashboard .o_ud_table tbody tr.o_ud_click:hover { background: rgba(128,128,128,0.08); transform: none; box-shadow: none; }
+.o_utility_dashboard .o_ud_empty { padding: 24px 8px; text-align: center; font-size: 13px; opacity: 0.7; }

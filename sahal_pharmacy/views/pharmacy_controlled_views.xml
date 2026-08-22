@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The register is append-only, so the form is create-or-read: there is no edit
+         path by design (see PharmacyControlledLog.write). -->
+    <record id="view_controlled_log_form" model="ir.ui.view">
+        <field name="name">pharmacy.controlled.log.form</field>
+        <field name="model">pharmacy.controlled.log</field>
+        <field name="arch" type="xml">
+            <form string="Register Entry">
+                <sheet>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fa fa-info-circle me-1" title="Information"/>
+                        Register entries cannot be edited or deleted once saved. Correct a
+                        mistake by posting an <strong>Adjustment</strong> entry.
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="controlled_schedule" readonly="1"/>
+                            <field name="lot_id" options="{'no_create': True}"/>
+                            <field name="movement_type"/>
+                            <field name="quantity"/>
+                            <field name="balance_after" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="pharmacist_id"/>
+                            <field name="witness_id"
+                                   required="movement_type == 'disposal'"/>
+                            <field name="patient_id"/>
+                            <field name="prescription_id"/>
+                            <field name="dispense_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="reason" placeholder="Reference, disposal method, count variance…"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_controlled_log_list" model="ir.ui.view">
+        <field name="name">pharmacy.controlled.log.list</field>
+        <field name="model">pharmacy.controlled.log</field>
+        <field name="arch" type="xml">
+            <list string="Controlled Drugs Register" create="1" edit="0" delete="0"
+                  decoration-danger="movement_type == 'disposal'"
+                  decoration-info="movement_type == 'receipt'">
+                <field name="date"/>
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="controlled_schedule" optional="show"/>
+                <field name="lot_id" optional="show"/>
+                <field name="movement_type"/>
+                <field name="quantity" sum="Net movement"/>
+                <field name="balance_after"/>
+                <field name="pharmacist_id"/>
+                <field name="witness_id" optional="hide"/>
+                <field name="patient_id" optional="show"/>
+                <field name="prescription_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_controlled_log_search" model="ir.ui.view">
+        <field name="name">pharmacy.controlled.log.search</field>
+        <field name="model">pharmacy.controlled.log</field>
+        <field name="arch" type="xml">
+            <search string="Controlled Drugs Register">
+                <field name="product_id"/>
+                <field name="lot_id"/>
+                <field name="pharmacist_id"/>
+                <field name="patient_id"/>
+                <filter name="filter_dispensed" string="Dispensed"
+                        domain="[('movement_type', '=', 'dispense')]"/>
+                <filter name="filter_received" string="Received"
+                        domain="[('movement_type', '=', 'receipt')]"/>
+                <filter name="filter_disposal" string="Disposals"
+                        domain="[('movement_type', '=', 'disposal')]"/>
+                <separator/>
+                <filter name="filter_this_month" string="This Month"
+                        domain="[('date', '&gt;=', (context_today().replace(day=1)).strftime('%Y-%m-%d'))]"/>
+                <group name="group_by" colspan="16">
+                    <filter name="group_product" string="Substance"
+                            context="{'group_by': 'product_id'}"/>
+                    <filter name="group_schedule" string="Schedule"
+                            context="{'group_by': 'controlled_schedule'}"/>
+                    <filter name="group_movement" string="Movement"
+                            context="{'group_by': 'movement_type'}"/>
+                    <filter name="group_pharmacist" string="Pharmacist"
+                            context="{'group_by': 'pharmacist_id'}"/>
+                    <filter name="group_month" string="Month"
+                            context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_controlled_log" model="ir.actions.act_window">
+        <field name="name">Controlled Drugs Register</field>
+        <field name="res_model">pharmacy.controlled.log</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_controlled_log_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">The register is empty</p>
+            <p>Dispensing a controlled substance writes to this register automatically.
+               Receipts, disposals and physical counts are recorded here directly.</p>
+        </field>
+    </record>
+
+    <!-- Expiry reporting (BRD 6). Both open native stock quants, filtered — no custom
+         report model needed, and drill-down to the batch keeps working. -->
+    <!-- model_id is stock.quant, not pharmacy.expiry.alert: Odoo hides a menu whose
+         server action targets a model the user cannot access, and an AbstractModel has
+         no ir.model.access at all, so the reports were invisible to everyone. The code
+         still calls the abstract helper, which owns the window logic. -->
+    <record id="action_near_expiry_stock" model="ir.actions.server">
+        <field name="name">Near-Expiry Stock</field>
+        <field name="model_id" ref="stock.model_stock_quant"/>
+        <field name="state">code</field>
+        <field name="code">action = env['pharmacy.expiry.alert'].action_open_near_expiry()</field>
+    </record>
+
+    <record id="action_expired_stock" model="ir.actions.server">
+        <field name="name">Expired Stock</field>
+        <field name="model_id" ref="stock.model_stock_quant"/>
+        <field name="state">code</field>
+        <field name="code">action = env['pharmacy.expiry.alert'].action_open_expired()</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_utility_reading_list" model="ir.ui.view">
+        <field name="name">utility.meter.reading.list</field>
+        <field name="model">utility.meter.reading</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="exception_state in ('invalid', 'tampering')"
+                  decoration-warning="exception_state == 'review'"
+                  decoration-muted="state == 'cancel' or superseded">
+                <header>
+                    <button name="action_create_invoice" type="object"
+                            string="Generate Invoice" class="btn-primary"
+                            groups="utility_management.group_utility_billing"/>
+                </header>
+                <field name="name"/>
+                <field name="reading_date"/>
+                <field name="meter_id"/>
+                <field name="account_id" optional="show"/>
+                <field name="partner_id" optional="hide"/>
+                <field name="reading_type"/>
+                <field name="previous_reading" optional="hide"/>
+                <field name="present_reading"/>
+                <field name="consumption" sum="Total"/>
+                <field name="exception_state" widget="badge"
+                       decoration-success="exception_state == 'normal'"
+                       decoration-warning="exception_state in ('review', 'estimated')"
+                       decoration-danger="exception_state in ('invalid', 'tampering')"/>
+                <field name="exception_codes" optional="show"/>
+                <field name="reader_id" optional="hide"/>
+                <field name="is_high_usage" optional="hide"/>
+                <field name="is_rollover" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'billed'"
+                       decoration-info="state == 'validated'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_utility_reading_form" model="ir.ui.view">
+        <field name="name">utility.meter.reading.form</field>
+        <field name="model">utility.meter.reading</field>
+        <field name="arch" type="xml">
+            <form string="Meter Reading">
+                <header>
+                    <button name="action_validate" type="object" string="Validate"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft"
+                            invisible="state in ('draft', 'billed')"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('cancel', 'billed')"/>
+                    <button name="action_approve_exception" type="object"
+                            string="Approve Exception" class="btn-primary"
+                            groups="utility_management.group_utility_billing"
+                            invisible="exception_state == 'normal' or reviewed_by"/>
+                    <button name="action_mark_invalid" type="object" string="Mark Invalid"
+                            groups="utility_management.group_utility_billing"
+                            invisible="state == 'billed' or exception_state == 'invalid'"/>
+                    <button name="action_mark_tampering" type="object"
+                            string="Suspected Tampering"
+                            groups="utility_management.group_utility_billing"
+                            invisible="exception_state == 'tampering'"/>
+                    <button name="action_reopen_review" type="object" string="Reopen Review"
+                            groups="utility_management.group_utility_billing"
+                            invisible="not reviewed_by"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,validated,billed"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="exception_state in ('normal', 'estimated')">
+                        <i class="fa fa-exclamation-triangle me-1" title="Exception"/>
+                        <strong>Needs review —
+                        <field name="exception_codes" nolabel="1" readonly="1" class="oe_inline"/></strong>
+                        <field name="exception_reason" nolabel="1" readonly="1"/>
+                    </div>
+                    <div class="alert alert-info" role="alert" invisible="not reviewed_by">
+                        Reviewed by <field name="reviewed_by" nolabel="1" readonly="1" class="oe_inline"/>
+                        on <field name="reviewed_on" nolabel="1" readonly="1" class="oe_inline"/>.
+                    </div>
+                    <div class="alert alert-info" role="alert" invisible="not superseded">
+                        This reading has been superseded by a later actual reading and will
+                        not be billed on its own.
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="meter_id"/>
+                            <field name="account_id" readonly="1"/>
+                            <field name="partner_id" readonly="1"/>
+                            <field name="reading_date"/>
+                            <field name="reading_type"/>
+                            <field name="reader_id"/>
+                        </group>
+                        <group>
+                            <field name="previous_reading" readonly="1"/>
+                            <field name="present_reading"/>
+                            <field name="multiplier" readonly="1"/>
+                            <field name="consumption" readonly="1"/>
+                            <field name="baseline_average" readonly="1"/>
+                            <field name="is_rollover" readonly="1"
+                                   invisible="not is_rollover"/>
+                            <field name="invoice_id" readonly="1" invisible="not invoice_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Field Report" name="field">
+                            <group>
+                                <group>
+                                    <field name="condition"/>
+                                    <field name="access_problem"
+                                           invisible="condition == 'ok'"/>
+                                </group>
+                                <group>
+                                    <field name="latitude"/>
+                                    <field name="longitude"/>
+                                </group>
+                            </group>
+                            <field name="image" widget="image" class="oe_avatar"/>
+                            <field name="note" placeholder="What the reader saw"/>
+                        </page>
+                        <page string="Exception Review" name="review"
+                              invisible="exception_state == 'normal' and not reviewed_by">
+                            <group>
+                                <group>
+                                    <field name="exception_state" readonly="1"/>
+                                    <field name="exception_codes" readonly="1"/>
+                                    <field name="is_high_usage" readonly="1"/>
+                                    <field name="is_low_usage" readonly="1"/>
+                                </group>
+                                <group>
+                                    <field name="reviewed_by" readonly="1"/>
+                                    <field name="reviewed_on" readonly="1"/>
+                                    <field name="superseded" readonly="1"/>
+                                </group>
+                            </group>
+                            <field name="exception_reason" readonly="1"/>
+                            <field name="review_note"
+                                   placeholder="Why this reading was approved or rejected"/>
+                            <field name="trueup_reading_ids" readonly="1"
+                                   invisible="not trueup_reading_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="reading_date"/>
+                                    <field name="present_reading"/>
+                                    <field name="consumption"/>
+                                    <field name="invoice_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_utility_reading_search" model="ir.ui.view">
+        <field name="name">utility.meter.reading.search</field>
+        <field name="model">utility.meter.reading</field>
+        <field name="arch" type="xml">
+            <search string="Readings">
+                <field name="name"/>
+                <field name="meter_id"/>
+                <field name="partner_id"/>
+                <filter name="f_draft" string="Draft" domain="[('state','=','draft')]"/>
+                <filter name="f_validated" string="Validated" domain="[('state','=','validated')]"/>
+                <filter name="f_billed" string="Billed" domain="[('state','=','billed')]"/>
+                <separator/>
+                <field name="account_id"/>
+                <filter name="f_exception" string="Needs Review"
+                        domain="[('exception_state','in',('review','invalid','tampering'))]"/>
+                <filter name="f_unreviewed" string="Unreviewed"
+                        domain="[('exception_state','!=','normal'),('reviewed_by','=',False)]"/>
+                <filter name="f_high" string="High Usage" domain="[('is_high_usage','=',True)]"/>
+                <filter name="f_low" string="Low Usage" domain="[('is_low_usage','=',True)]"/>
+                <filter name="f_zero" string="Zero Consumption" domain="[('consumption','=',0)]"/>
+                <filter name="f_rollover" string="Rollover" domain="[('is_rollover','=',True)]"/>
+                <filter name="f_est" string="Estimated" domain="[('reading_type','=','estimated')]"/>
+                <group name="group_by" colspan="16">
+                    <filter name="g_meter" string="Meter" context="{'group_by':'meter_id'}"/>
+                    <filter name="g_state" string="Status" context="{'group_by':'state'}"/>
+                    <filter name="g_month" string="Reading Month" context="{'group_by':'reading_date:month'}"/>
+                    <filter name="g_exception" string="Exception" context="{'group_by':'exception_state'}"/>
+                    <filter name="g_reader" string="Read By" context="{'group_by':'reader_id'}"/>
+                    <filter name="g_account" string="Service Account" context="{'group_by':'account_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_utility_reading" model="ir.actions.act_window">
+        <field name="name">Meter Readings</field>
+        <field name="res_model">utility.meter.reading</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_utility_reading_search"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="utility_management.Dashboard">
+    <div class="o_utility_dashboard o_action">
+        <div class="o_ud_header">
+            <div>
+                <h1 class="o_ud_title">Utility Overview</h1>
+                <span class="o_ud_subtitle">Meters, consumption, billing and readings needing attention</span>
+            </div>
+            <div class="o_ud_controls">
+                <select class="form-select form-select-sm" t-on-change="(ev) => this.onPeriod(parseInt(ev.target.value))">
+                    <option value="6" t-att-selected="state.months === 6">Last 6 months</option>
+                    <option value="12" t-att-selected="state.months === 12">Last 12 months</option>
+                    <option value="24" t-att-selected="state.months === 24">Last 24 months</option>
+                </select>
+                <button class="btn btn-sm btn-secondary" t-on-click="() => this.load()">
+                    <i class="fa fa-refresh me-1"/>Refresh
+                </button>
+            </div>
+        </div>
+
+        <div t-if="state.loading" class="o_ud_loading"><i class="fa fa-circle-o-notch fa-spin fa-2x"/></div>
+
+        <t t-elif="state.data">
+            <div class="o_ud_kpis">
+                <div class="o_ud_card">
+                    <div class="o_ud_label">Meters</div>
+                    <div class="o_ud_value" t-esc="num(state.data.kpis.meters_total)"/>
+                    <div class="o_ud_hint"><t t-esc="state.data.kpis.meters_active"/> active · <t t-esc="state.data.kpis.meters_maintenance"/> in maintenance</div>
+                </div>
+                <div class="o_ud_card">
+                    <div class="o_ud_label">Customers Served</div>
+                    <div class="o_ud_value" t-esc="num(state.data.kpis.customers)"/>
+                    <div class="o_ud_hint"><t t-esc="state.data.kpis.readings_this_month"/> readings this month</div>
+                </div>
+                <div class="o_ud_card">
+                    <div class="o_ud_label">Billed This Month</div>
+                    <div class="o_ud_value o_ud_pos" t-esc="money(state.data.kpis.revenue_this_month)"/>
+                    <div class="o_ud_hint"><t t-esc="money(state.data.kpis.outstanding)"/> outstanding</div>
+                </div>
+                <div class="o_ud_card o_ud_click" t-on-click="() => this.openHighUsage()">
+                    <div class="o_ud_label">Needs Attention</div>
+                    <div class="o_ud_value" t-att-class="state.data.kpis.high_usage ? 'o_ud_neg' : ''" t-esc="num(state.data.kpis.high_usage)"/>
+                    <div class="o_ud_hint">high-usage flags · <t t-esc="state.data.kpis.unbilled"/> unbilled readings</div>
+                </div>
+            </div>
+
+            <div class="o_ud_charts">
+                <div class="o_ud_panel o_ud_wide">
+                    <div class="o_ud_panel_head"><h2>Consumption &amp; Revenue</h2><span class="o_ud_subtitle">By month</span></div>
+                    <div class="o_ud_chart"><canvas t-ref="consumptionChart"/></div>
+                    <div t-if="!state.chartsOk" class="o_ud_empty">Charts could not load; figures above are accurate.</div>
+                </div>
+                <div class="o_ud_panel">
+                    <div class="o_ud_panel_head"><h2>Meter Mix</h2><span class="o_ud_subtitle">By utility</span></div>
+                    <div class="o_ud_chart"><canvas t-ref="mixChart"/></div>
+                    <div t-if="!state.data.meter_mix.length" class="o_ud_empty">No meters yet.</div>
+                </div>
+            </div>
+
+            <div class="o_ud_panel">
+                <div class="o_ud_panel_head"><h2>High-Usage Readings</h2><span class="o_ud_subtitle">Awaiting review</span></div>
+                <table class="o_ud_table" t-if="state.data.attention.length">
+                    <thead><tr><th>Reading</th><th>Meter</th><th>Customer</th><th class="text-end">Consumption</th><th class="text-end">Recent Avg</th></tr></thead>
+                    <tbody>
+                        <tr t-foreach="state.data.attention" t-as="row" t-key="row.id" class="o_ud_click" t-on-click="() => this.openReading(row.id)">
+                            <td class="fw-bold" t-esc="row.name"/>
+                            <td t-esc="row.meter"/>
+                            <td t-esc="row.customer or '—'"/>
+                            <td class="text-end o_ud_neg" t-esc="num(row.consumption)"/>
+                            <td class="text-end" t-esc="num(row.average)"/>
+                        </tr>
+                    </tbody>
+                </table>
+                <div t-else="" class="o_ud_empty"><i class="fa fa-check-circle me-1 o_ud_pos"/>No anomalies awaiting review.</div>
+            </div>
+        </t>
+    </div>
+</t>
+
+</templates>

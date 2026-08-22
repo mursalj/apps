@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_utility_tariff_list" model="ir.ui.view">
+        <field name="name">utility.tariff.list</field>
+        <field name="model">utility.tariff</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="utility_type"/>
+                <field name="structure"/>
+                <field name="flat_rate" optional="show"/>
+                <field name="base_charge" optional="show"/>
+                <field name="date_start" optional="show"/>
+                <field name="date_end" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_utility_tariff_form" model="ir.ui.view">
+        <field name="name">utility.tariff.form</field>
+        <field name="model">utility.tariff</field>
+        <field name="arch" type="xml">
+            <form string="Tariff">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. Residential Electricity 2026"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="utility_type"/>
+                            <field name="structure"/>
+                            <field name="unit_name"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                        </group>
+                        <group>
+                            <field name="flat_rate" invisible="structure != 'flat'"/>
+                            <field name="base_charge" invisible="structure == 'base' and False"/>
+                            <field name="tax_ids" widget="many2many_tags"/>
+                            <field name="product_id"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
+                    </group>
+                    <group string="Eligibility">
+                        <group>
+                            <field name="customer_category_ids" widget="many2many_tags"/>
+                        </group>
+                        <group>
+                            <field name="area"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Consumption Blocks" name="blocks"
+                              invisible="structure != 'tiered'">
+                            <div class="alert alert-info" role="alert">
+                                Blocks are marginal: each slice of consumption is charged
+                                at its own rate. Leave the LAST block's "Up To" empty to
+                                mean "and above" — anywhere else it must increase.
+                            </div>
+                            <field name="block_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="lower_limit" readonly="1"/>
+                                    <field name="upper_limit"/>
+                                    <field name="rate"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Fees, Discounts &amp; Penalties" name="charges">
+                            <div class="alert alert-info" role="alert">
+                                Applied after usage, in sequence order: fees, then the
+                                minimum or maximum adjustment, then discounts and
+                                subsidies, then penalties. Penalties only appear on a bill
+                                when the billing run has checked the account's overdue
+                                balance.
+                            </div>
+                            <field name="charge_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="kind"/>
+                                    <field name="computation"/>
+                                    <field name="amount"/>
+                                    <field name="apply_when"/>
+                                    <field name="threshold"
+                                           column_invisible="0"/>
+                                    <field name="active" widget="boolean_toggle"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_utility_tariff" model="ir.actions.act_window">
+        <field name="name">Tariffs</field>
+        <field name="res_model">utility.tariff</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

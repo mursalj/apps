@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================== Wholesale customer profile ====================== -->
+    <record id="view_partner_form_wholesale" model="ir.ui.view">
+        <field name="name">res.partner.form.pharmacy.wholesale</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="is_wholesale_customer"/>
+            </xpath>
+            <xpath expr="//notebook" position="inside">
+                <page string="Wholesale Account" name="wholesale"
+                      invisible="not is_wholesale_customer">
+                    <div class="alert alert-danger" role="alert" invisible="not credit_hold">
+                        <i class="fa fa-ban me-1" title="Credit hold"/>
+                        <strong>On credit hold.</strong>
+                        <field name="credit_hold_reason" nolabel="1" readonly="1"
+                               class="oe_inline"/>
+                        New orders are blocked until a manager releases the hold.
+                    </div>
+                    <div class="alert alert-danger" role="alert"
+                         invisible="wholesale_licence_state != 'expired'">
+                        <i class="fa fa-exclamation-triangle me-1" title="Expired"/>
+                        <strong>Trading licence expired.</strong>
+                        Medicines may not be sold to this account until it is renewed.
+                    </div>
+                    <group>
+                        <group string="Account">
+                            <field name="wholesale_category"/>
+                            <field name="wholesale_licence_no"/>
+                            <field name="wholesale_licence_expiry"/>
+                            <field name="wholesale_licence_state"/>
+                            <field name="is_approved_wholesale"/>
+                        </group>
+                        <group string="Credit">
+                            <field name="property_payment_term_id"/>
+                            <field name="credit_limit"/>
+                            <field name="credit" string="Currently Owing" readonly="1"/>
+                            <field name="credit_available" readonly="1"/>
+                            <field name="credit_used_pct" widget="percentage"
+                                   readonly="1"/>
+                            <field name="credit_hold" readonly="1"/>
+                            <field name="credit_hold_reason"
+                                   invisible="not credit_hold" readonly="1"/>
+                            <button name="action_place_on_credit_hold" type="object"
+                                    string="Place on Credit Hold"
+                                    invisible="credit_hold"/>
+                            <button name="action_release_credit_hold" type="object"
+                                    string="Release Credit Hold" class="btn-primary"
+                                    invisible="not credit_hold"
+                                    groups="sahal_pharmacy.group_pharmacy_manager"/>
+                        </group>
+                    </group>
+                    <group string="Pricing">
+                        <field name="property_product_pricelist"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_partner_list_wholesale" model="ir.ui.view">
+        <field name="name">res.partner.list.pharmacy.wholesale</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="credit_hold or wholesale_licence_state == 'expired'"
+                  decoration-warning="wholesale_licence_state == 'expiring'">
+                <field name="display_name" string="Customer"/>
+                <field name="wholesale_category"/>
+                <field name="wholesale_licence_no" optional="show"/>
+                <field name="wholesale_licence_expiry" optional="show"/>
+                <field name="wholesale_licence_state" widget="badge"
+                       decoration-success="wholesale_licence_state == 'valid'"
+                       decoration-warning="wholesale_licence_state == 'expiring'"
+                       decoration-danger="wholesale_licence_state == 'expired'"/>
+                <field name="credit_limit" optional="show"/>
+                <field name="credit" string="Owing" optional="show"/>
+                <field name="credit_available" optional="show"/>
+                <field name="credit_hold" widget="boolean_toggle"/>
+                <field name="is_approved_wholesale" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_wholesale_customers" model="ir.actions.act_window">
+        <field name="name">Wholesale Customers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('is_wholesale_customer', '=', True)]</field>
+        <field name="context">{'default_is_wholesale_customer': True, 'default_customer_rank': 1}</field>
+        <field name="view_id" ref="view_partner_list_wholesale"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a wholesale customer</p>
+            <p>Pharmacies, clinics, hospitals, NGOs and government buyers — with their
+               trading licence, credit limit and price list.</p>
+        </field>
+    </record>
+
+    <!-- ===================== Wholesale order checks ========================== -->
+    <record id="view_sale_order_form_wholesale" model="ir.ui.view">
+        <field name="name">sale.order.form.pharmacy.wholesale</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-danger m-0" role="alert"
+                     invisible="not wholesale_block_reason or state not in ('draft', 'sent')">
+                    <i class="fa fa-exclamation-triangle me-1" title="Blocked"/>
+                    <strong>This wholesale order cannot be confirmed</strong>
+                    <field name="wholesale_block_reason" nolabel="1" readonly="1"/>
+                </div>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm'][1]" position="after">
+                <button name="action_confirm_wholesale_override" type="object"
+                        string="Confirm (Manager Override)" class="btn-secondary"
+                        groups="sahal_pharmacy.group_pharmacy_manager"
+                        invisible="not wholesale_block_reason or state not in ('draft', 'sent')"
+                        confirm="This confirms the order despite the checks above, and records that you did. Continue?"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="is_wholesale"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ===================== Product order quantities ======================== -->
+    <record id="view_product_template_form_wholesale" model="ir.ui.view">
+        <field name="name">product.template.form.pharmacy.wholesale</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="sahal_pharmacy.product_template_form_pharmacy"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='pharmacy']" position="inside">
+                <group string="Wholesale Order Quantities">
+                    <group>
+                        <field name="wholesale_min_qty"/>
+                        <field name="wholesale_max_qty"/>
+                    </group>
+                    <group>
+                        <field name="wholesale_multiple_qty"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

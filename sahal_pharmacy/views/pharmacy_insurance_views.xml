@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_insurance_claim_list" model="ir.ui.view">
+        <field name="name">pharmacy.insurance.claim.list</field>
+        <field name="model">pharmacy.insurance.claim</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="state == 'rejected'"
+                  decoration-success="state == 'paid'"
+                  decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="claim_date"/>
+                <field name="patient_id"/>
+                <field name="insurer_id"/>
+                <field name="total_amount" sum="Total"/>
+                <field name="covered_amount" sum="Insurer"/>
+                <field name="patient_amount" sum="Copay"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="invoice_id" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'submitted'"
+                       decoration-success="state in ('approved', 'invoiced', 'paid')"
+                       decoration-danger="state == 'rejected'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_insurance_claim_form" model="ir.ui.view">
+        <field name="name">pharmacy.insurance.claim.form</field>
+        <field name="model">pharmacy.insurance.claim</field>
+        <field name="arch" type="xml">
+            <form string="Insurance Claim">
+                <header>
+                    <button name="action_submit" type="object" string="Submit to Insurer"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_approve" type="object" string="Insurer Approved"
+                            class="btn-primary" invisible="state != 'submitted'"/>
+                    <button name="action_reject" type="object" string="Insurer Rejected"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_invoice_insurer" type="object"
+                            string="Invoice Insurer" class="btn-primary"
+                            invisible="state != 'approved'"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('cancel', 'paid')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submitted,approved,invoiced"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-danger" role="alert"
+                         invisible="state != 'rejected'">
+                        <strong>Rejected by the insurer:</strong>
+                        <field name="rejection_reason" nolabel="1" readonly="1" class="oe_inline"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id"/>
+                            <field name="insurer_id"/>
+                            <field name="policy_no"/>
+                            <field name="claim_date"/>
+                        </group>
+                        <group>
+                            <field name="total_amount"/>
+                            <field name="coverage_pct"/>
+                            <field name="covered_amount"/>
+                            <field name="patient_amount"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Source">
+                            <field name="dispense_id"/>
+                            <field name="sale_order_id"/>
+                            <field name="invoice_id" readonly="1"/>
+                        </group>
+                        <group string="Insurer Response">
+                            <field name="submitted_on" readonly="1"/>
+                            <field name="response_on" readonly="1"/>
+                            <field name="rejection_reason"
+                                   invisible="state != 'rejected'"/>
+                        </group>
+                    </group>
+                    <field name="response_note" placeholder="What the insurer said"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_insurance_claim_search" model="ir.ui.view">
+        <field name="name">pharmacy.insurance.claim.search</field>
+        <field name="model">pharmacy.insurance.claim</field>
+        <field name="arch" type="xml">
+            <search string="Insurance Claims">
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="insurer_id"/>
+                <filter name="f_open" string="Awaiting Insurer"
+                        domain="[('state','in',('draft','submitted'))]"/>
+                <filter name="f_rejected" string="Rejected" domain="[('state','=','rejected')]"/>
+                <filter name="f_unbilled" string="Approved, Not Invoiced"
+                        domain="[('state','=','approved')]"/>
+                <group name="group_by" colspan="16">
+                    <filter name="g_insurer" string="Insurer" context="{'group_by':'insurer_id'}"/>
+                    <filter name="g_state" string="Status" context="{'group_by':'state'}"/>
+                    <filter name="g_month" string="Month" context="{'group_by':'claim_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_insurance_claim" model="ir.actions.act_window">
+        <field name="name">Insurance Claims</field>
+        <field name="res_model">pharmacy.insurance.claim</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_insurance_claim_search"/>
+    </record>
+
+    <record id="view_dispense_form_insurance" model="ir.ui.view">
+        <field name="name">pharmacy.dispense.form.insurance</field>
+        <field name="model">pharmacy.dispense</field>
+        <field name="inherit_id" ref="sahal_pharmacy.view_pharmacy_dispense_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_create_insurance_claim" type="object"
+                        string="Claim on Insurance"
+                        invisible="state != 'done' or not patient_is_insured or claim_count"/>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+                <button name="action_view_claims" type="object" class="oe_stat_button"
+                        icon="fa-shield" invisible="not claim_count">
+                    <field name="claim_count" widget="statinfo" string="Claims"/>
+                </button>
+            </xpath>
+            <xpath expr="//div[hasclass('oe_button_box')]" position="before">
+                <field name="patient_is_insured" invisible="1"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ===================== Supplier licence & approval ===================== -->
+    <record id="view_partner_form_pharma_supplier" model="ir.ui.view">
+        <field name="name">res.partner.form.pharmacy.supplier</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Pharmaceutical Supplier" name="pharma_supplier"
+                      invisible="not is_pharma_supplier">
+                    <div class="alert alert-danger" role="alert"
+                         invisible="pharma_licence_state != 'expired'">
+                        <i class="fa fa-exclamation-triangle me-1" title="Expired"/>
+                        <strong>Licence expired.</strong>
+                        Medicines should not be ordered from this supplier until a
+                        current licence is recorded.
+                    </div>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="pharma_licence_state != 'expiring'">
+                        <i class="fa fa-clock-o me-1" title="Expiring"/>
+                        <strong>Licence expires soon</strong> —
+                        <field name="pharma_licence_expiry" readonly="1" class="oe_inline"/>.
+                    </div>
+                    <group>
+                        <group string="Licence">
+                            <field name="supplier_category"/>
+                            <field name="pharma_licence_no"/>
+                            <field name="pharma_licence_authority"/>
+                            <field name="pharma_licence_expiry"/>
+                            <field name="pharma_licence_state"/>
+                        </group>
+                        <group string="Approval">
+                            <field name="is_approved_supplier" readonly="1"/>
+                            <field name="supplier_approved_by_id" readonly="1"
+                                   invisible="not is_approved_supplier"/>
+                            <field name="supplier_approved_on" readonly="1"
+                                   invisible="not is_approved_supplier"/>
+                            <button name="action_approve_supplier" type="object"
+                                    string="Approve Supplier" class="btn-primary"
+                                    invisible="is_approved_supplier"
+                                    groups="sahal_pharmacy.group_pharmacy_manager"/>
+                            <button name="action_revoke_supplier_approval" type="object"
+                                    string="Revoke Approval"
+                                    invisible="not is_approved_supplier"
+                                    groups="sahal_pharmacy.group_pharmacy_manager"/>
+                        </group>
+                    </group>
+                    <field name="supplier_approval_note"
+                           placeholder="Why this supplier is approved, and any limits"/>
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="is_pharma_supplier"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_partner_list_pharma_supplier" model="ir.ui.view">
+        <field name="name">res.partner.list.pharmacy.supplier</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="pharma_licence_state == 'expired'"
+                  decoration-warning="pharma_licence_state == 'expiring'">
+                <field name="display_name" string="Supplier"/>
+                <field name="supplier_category"/>
+                <field name="pharma_licence_no"/>
+                <field name="pharma_licence_expiry"/>
+                <field name="pharma_licence_state" widget="badge"
+                       decoration-success="pharma_licence_state == 'valid'"
+                       decoration-warning="pharma_licence_state == 'expiring'"
+                       decoration-danger="pharma_licence_state == 'expired'"/>
+                <field name="is_approved_supplier" widget="boolean_toggle"/>
+                <field name="phone" optional="show"/>
+                <field name="email" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_suppliers" model="ir.actions.act_window">
+        <field name="name">Suppliers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('is_pharma_supplier', '=', True)]</field>
+        <field name="context">{'default_is_pharma_supplier': True, 'default_supplier_rank': 1}</field>
+        <field name="view_id" ref="view_partner_list_pharma_supplier"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Record a pharmaceutical supplier</p>
+            <p>Capture their licence and approve them before ordering medicines. An
+               unapproved or lapsed supplier is flagged on every purchase order.</p>
+        </field>
+    </record>
+
+    <!-- ===================== Purchase order warning ========================= -->
+    <record id="view_purchase_order_form_pharmacy" model="ir.ui.view">
+        <field name="name">purchase.order.form.pharmacy</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-warning m-0" role="alert"
+                     invisible="not pharma_supplier_warning or state not in ('draft', 'sent')">
+                    <i class="fa fa-exclamation-triangle me-1" title="Warning"/>
+                    <strong>Pharmacy supplier check</strong>
+                    <field name="pharma_supplier_warning" nolabel="1" readonly="1"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- ===================== Returns to supplier ============================ -->
+    <record id="view_supplier_return_list" model="ir.ui.view">
+        <field name="name">pharmacy.supplier.return.list</field>
+        <field name="model">pharmacy.supplier.return</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state == 'cancel'"
+                  decoration-success="state == 'credited'">
+                <field name="name"/>
+                <field name="return_date"/>
+                <field name="partner_id"/>
+                <field name="reason"/>
+                <field name="total_quantity" sum="Quantity"/>
+                <field name="total_value" sum="Value"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="picking_id" optional="show"/>
+                <field name="credit_note_id" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'approved'"
+                       decoration-success="state == 'credited'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_supplier_return_form" model="ir.ui.view">
+        <field name="name">pharmacy.supplier.return.form</field>
+        <field name="model">pharmacy.supplier.return</field>
+        <field name="arch" type="xml">
+            <form string="Return to Supplier">
+                <header>
+                    <button name="action_approve" type="object" string="Approve"
+                            class="btn-primary" invisible="state != 'draft'"
+                            groups="sahal_pharmacy.group_pharmacy_pharmacist"/>
+                    <button name="action_create_shipment" type="object"
+                            string="Ship Back" class="btn-primary"
+                            invisible="state != 'approved' or picking_id"/>
+                    <button name="action_create_credit_note" type="object"
+                            string="Claim Credit" class="btn-primary"
+                            invisible="state not in ('approved', 'returned') or credit_note_id"/>
+                    <button name="action_reset_draft" type="object" string="Reset to Draft"
+                            invisible="state in ('draft', 'credited')"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('cancel', 'credited')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,approved,returned,credited"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_picking" type="object"
+                                class="oe_stat_button" icon="fa-truck"
+                                invisible="not picking_id">
+                            <span class="o_stat_text">Shipment</span>
+                        </button>
+                        <button name="action_view_credit_note" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not credit_note_id">
+                            <span class="o_stat_text">Credit Note</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="return_date"/>
+                            <field name="origin_picking_id"/>
+                        </group>
+                        <group>
+                            <field name="reason"/>
+                            <field name="approved_by_id" readonly="1"
+                                   invisible="not approved_by_id"/>
+                            <field name="approved_on" readonly="1"
+                                   invisible="not approved_on"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" readonly="state not in ('draft',)">
+                        <list editable="bottom">
+                            <field name="product_id"/>
+                            <field name="lot_id"/>
+                            <field name="expiration_date" readonly="1"/>
+                            <field name="quantity"/>
+                            <field name="unit_cost"/>
+                        </list>
+                    </field>
+                    <group class="oe_subtotal_footer">
+                        <field name="total_quantity"/>
+                        <field name="total_value"/>
+                    </group>
+                    <field name="reason_note" placeholder="What happened, and what the supplier agreed"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_supplier_return_search" model="ir.ui.view">
+        <field name="name">pharmacy.supplier.return.search</field>
+        <field name="model">pharmacy.supplier.return</field>
+        <field name="arch" type="xml">
+            <search string="Returns to Supplier">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <filter name="f_draft" string="Draft" domain="[('state','=','draft')]"/>
+                <filter name="f_open" string="Awaiting Credit"
+                        domain="[('state','in',('approved','returned'))]"/>
+                <filter name="f_expired" string="Expired Stock"
+                        domain="[('reason','in',('expired','near_expiry'))]"/>
+                <group name="group_by" colspan="16">
+                    <filter name="g_supplier" string="Supplier" context="{'group_by':'partner_id'}"/>
+                    <filter name="g_reason" string="Reason" context="{'group_by':'reason'}"/>
+                    <filter name="g_state" string="Status" context="{'group_by':'state'}"/>
+                    <filter name="g_month" string="Month" context="{'group_by':'return_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_supplier_return" model="ir.actions.act_window">
+        <field name="name">Returns to Supplier</field>
+        <field name="res_model">pharmacy.supplier.return</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_supplier_return_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Send stock back to a supplier</p>
+            <p>Expired, damaged or recalled stock, with the reason and the batch on
+               record — and the shipment and credit note raised from here.</p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_utility_meter_replace_wizard_form" model="ir.ui.view">
+        <field name="name">utility.meter.replace.wizard.form</field>
+        <field name="model">utility.meter.replace.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Replace Meter">
+                <div class="alert alert-info" role="alert">
+                    Closing and opening readings keep consumption continuous across the
+                    swap: the old meter's final slice stays billable, and the new dial
+                    starts from a recorded point instead of looking like negative usage.
+                </div>
+                <group>
+                    <group string="Removing">
+                        <field name="old_meter_id" readonly="1"/>
+                        <field name="account_id"/>
+                        <field name="utility_type" invisible="1"/>
+                        <field name="last_reading"/>
+                        <field name="final_reading"/>
+                    </group>
+                    <group string="Installing">
+                        <field name="new_meter_id"/>
+                        <field name="initial_reading"/>
+                        <field name="date"/>
+                        <field name="reason"/>
+                        <field name="technician_id"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="create_readings"/>
+                    <field name="note" placeholder="Reason, condition, anything a dispute would need"/>
+                    <field name="image" widget="image"/>
+                </group>
+                <footer>
+                    <button name="action_replace" type="object" string="Replace Meter"
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

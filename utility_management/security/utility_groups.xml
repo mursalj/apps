@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="module_category_utility" model="ir.module.category">
+            <field name="name">Utility Management</field>
+            <field name="sequence">23</field>
+        </record>
+
+        <record id="res_groups_privilege_utility" model="res.groups.privilege">
+            <field name="name">Utility Management</field>
+            <field name="category_id" ref="module_category_utility"/>
+        </record>
+
+        <!-- Roles from BRD section 3, as an escalating chain: a Field Technician logs
+             readings; a Billing Specialist also runs billing; a Manager configures
+             tariffs and overrides. Portal Customer is native portal + record rules. -->
+
+        <record id="group_utility_technician" model="res.groups">
+            <field name="name">Field Technician</field>
+            <field name="sequence">10</field>
+            <field name="privilege_id" ref="res_groups_privilege_utility"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Logs meter readings and attaches photos; views assigned
+                meters. Cannot configure tariffs or run billing.</field>
+        </record>
+
+        <record id="group_utility_billing" model="res.groups">
+            <field name="name">Billing Specialist</field>
+            <field name="sequence">20</field>
+            <field name="privilege_id" ref="res_groups_privilege_utility"/>
+            <field name="implied_ids" eval="[(4, ref('group_utility_technician'))]"/>
+            <field name="comment">Generates draft invoices, reviews anomaly logs and sends
+                customer bills.</field>
+        </record>
+
+        <record id="group_utility_manager" model="res.groups">
+            <field name="name">Utility Manager</field>
+            <field name="sequence">30</field>
+            <field name="privilege_id" ref="res_groups_privilege_utility"/>
+            <field name="implied_ids" eval="[(4, ref('group_utility_billing'))]"/>
+            <field name="comment">Full access: configures tariffs, approves batch bill
+                runs and overrides readings.</field>
+        </record>
+
+    </data>
+</odoo>

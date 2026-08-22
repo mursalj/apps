@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_partner_form_pharmacy" model="ir.ui.view">
+        <field name="name">res.partner.form.pharmacy</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_prescriptions" type="object"
+                        class="oe_stat_button" icon="fa-file-text-o"
+                        invisible="not is_patient">
+                    <field name="prescription_count" widget="statinfo" string="Prescriptions"/>
+                </button>
+            </xpath>
+
+            <xpath expr="//group[@name='container_row_2']" position="after">
+                <group name="pharmacy_roles" string="Pharmacy Roles">
+                    <field name="is_patient"/>
+                    <field name="is_doctor"/>
+                    <field name="is_pharma_manufacturer"/>
+                    <field name="is_insurer"/>
+                </group>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="Patient" name="patient" invisible="not is_patient">
+                    <!-- Allergies are put where they cannot be missed: a pharmacist
+                         about to dispense should see them without opening a tab. -->
+                    <div class="alert alert-danger" role="alert"
+                         invisible="not has_allergies">
+                        <i class="fa fa-exclamation-triangle me-1" title="Warning"/>
+                        <strong>Allergies:</strong> <field name="allergies" nolabel="1" readonly="1" class="oe_inline"/>
+                    </div>
+                    <group>
+                        <group string="Identity">
+                            <field name="patient_code"/>
+                            <field name="date_of_birth"/>
+                            <field name="age" readonly="1"/>
+                            <field name="gender"/>
+                            <field name="blood_group"/>
+                        </group>
+                        <group string="Emergency Contact">
+                            <field name="emergency_contact_name"/>
+                            <field name="emergency_contact_phone"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Clinical">
+                            <field name="allergies" placeholder="e.g. Penicillin, sulfa drugs"/>
+                            <field name="chronic_conditions" placeholder="e.g. Type 2 diabetes, hypertension"/>
+                            <field name="medical_notes"/>
+                        </group>
+                        <group string="Insurance">
+                            <field name="insurer_id"/>
+                            <field name="insurance_member_no"/>
+                            <field name="insurance_valid_until"/>
+                            <field name="insurance_coverage_pct"/>
+                            <field name="insurance_is_valid" readonly="1"
+                                   invisible="not insurer_id"/>
+                        </group>
+                    </group>
+                </page>
+                <page string="Prescriber" name="doctor" invisible="not is_doctor">
+                    <group>
+                        <group>
+                            <field name="medical_license_no"/>
+                            <field name="specialty"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="res_partner_search_pharmacy" model="ir.ui.view">
+        <field name="name">res.partner.search.pharmacy</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="patient_code"/>
+            </field>
+            <filter name="type_person" position="after">
+                <separator/>
+                <filter name="filter_patients" string="Patients"
+                        domain="[('is_patient', '=', True)]"/>
+                <filter name="filter_doctors" string="Prescribers"
+                        domain="[('is_doctor', '=', True)]"/>
+                <filter name="filter_allergies" string="Has Allergies"
+                        domain="[('has_allergies', '=', True)]"/>
+                <filter name="filter_insured" string="Insured"
+                        domain="[('insurer_id', '!=', False)]"/>
+            </filter>
+        </field>
+    </record>
+
+    <record id="action_pharmacy_patients" model="ir.actions.act_window">
+        <field name="name">Patients</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('is_patient', '=', True)]</field>
+        <field name="context">{'default_is_patient': True}</field>
+    </record>
+
+    <record id="action_pharmacy_doctors" model="ir.actions.act_window">
+        <field name="name">Prescribers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('is_doctor', '=', True)]</field>
+        <field name="context">{'default_is_doctor': True}</field>
+    </record>
+
+</odoo>

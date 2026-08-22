@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_pharmacy_dashboard" model="ir.actions.client">
+        <field name="name">Pharmacy Dashboard</field>
+        <field name="tag">sahal_pharmacy.dashboard</field>
+    </record>
+
+    <menuitem id="menu_pharmacy_dashboard"
+              name="Dashboard"
+              action="action_pharmacy_dashboard"
+              parent="menu_pharmacy_root"
+              groups="sahal_pharmacy.group_pharmacy_technician"
+              sequence="1"/>
+
+</odoo>

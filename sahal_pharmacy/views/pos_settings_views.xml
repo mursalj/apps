@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Adds a "Pharmacy" toggle to the Point of Sale settings, next to the
+         Bar/Restaurant switch. Only tills with this on load prescriptions and
+         show restricted-item / expiry warnings. -->
+    <record id="res_config_settings_view_form_pharmacy" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.inherit.pharmacy</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="point_of_sale.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <setting id="is_restaurant" position="after">
+                <setting id="is_pharmacy_setting" string="Pharmacy"
+                         groups="sahal_pharmacy.group_pharmacy_manager"
+                         help="Enable pharmacy features for this point of sale: restricted-item flags, prescription lookup and near-expiry warnings. Leave off for ordinary retail or restaurant tills.">
+                    <field name="pos_is_pharmacy"/>
+                </setting>
+            </setting>
+        </field>
+    </record>
+
+    <record id="pos_config_view_form_pharmacy" model="ir.ui.view">
+        <field name="name">pos.config.form.pharmacy</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Anchored on the ePos Printer setting, NOT on module_pos_restaurant.
+                 The first module_pos_restaurant on this form sits inside
+                 <div id="restaurant_on_create" invisible="not
+                 context.get('pos_config_create_mode')"> — a block that only renders
+                 while a shop is being CREATED from general settings. A field placed
+                 there is in the arch, passes an "is the field present" test, and is
+                 invisible on every existing point of sale. It was, and that is exactly
+                 what the owner could not find.
+
+                 The block below is the one shown when editing an existing record
+                 (invisible="context.get('pos_config_create_mode', False)"). -->
+            <xpath expr="//setting[@id='other_devices']" position="before">
+                <setting id="pharmacy_till" string="Pharmacy Point of Sale"
+                         groups="sahal_pharmacy.group_pharmacy_manager"
+                         help="Turn on the pharmacy features for this till: prescription lookup, restricted-item flags, expiry blocking and near-expiry warnings. Leave off for ordinary retail or restaurant tills so they load no pharmacy data.">
+                    <field name="is_pharmacy"/>
+                </setting>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Visible at a glance in the till list, so nobody has to open each one to find
+         out which is the pharmacy counter. -->
+    <record id="pos_config_view_tree_pharmacy" model="ir.ui.view">
+        <field name="name">pos.config.list.pharmacy</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_config_tree"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="is_pharmacy" optional="show"
+                       groups="sahal_pharmacy.group_pharmacy_manager"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

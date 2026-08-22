@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_drug_interaction_list" model="ir.ui.view">
+        <field name="name">pharmacy.drug.interaction.list</field>
+        <field name="model">pharmacy.drug.interaction</field>
+        <field name="arch" type="xml">
+            <list editable="bottom"
+                  decoration-danger="severity == 'critical'"
+                  decoration-warning="severity == 'high'">
+                <field name="ingredient_a_id"/>
+                <field name="ingredient_b_id"/>
+                <field name="severity" widget="badge"
+                       decoration-danger="severity == 'critical'"
+                       decoration-warning="severity == 'high'"/>
+                <field name="description"/>
+                <field name="recommended_action" optional="show"/>
+                <field name="source" optional="hide"/>
+                <field name="active" widget="boolean_toggle" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_drug_interaction" model="ir.actions.act_window">
+        <field name="name">Drug Interactions</field>
+        <field name="res_model">pharmacy.drug.interaction</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Record an interaction</p>
+            <p>Pairs of active ingredients that should not be taken together, with what
+               happens and what to do. The pharmacy owns this list — it is a warning
+               system, not a clinical database, and it never replaces a pharmacist's
+               judgement.</p>
+        </field>
+    </record>
+
+    <record id="view_substitution_list" model="ir.ui.view">
+        <field name="name">pharmacy.substitution.list</field>
+        <field name="model">pharmacy.substitution</field>
+        <field name="arch" type="xml">
+            <list create="false" decoration-warning="not is_equivalent">
+                <field name="create_date" string="Date"/>
+                <field name="prescription_id"/>
+                <field name="patient_id"/>
+                <field name="original_product_id"/>
+                <field name="substitute_product_id"/>
+                <field name="is_equivalent" string="Same Generic"/>
+                <field name="reason"/>
+                <field name="pharmacist_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_substitution" model="ir.actions.act_window">
+        <field name="name">Substitutions</field>
+        <field name="res_model">pharmacy.substitution</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Clinical warnings on the prescription -->
+    <record id="view_prescription_form_clinical" model="ir.ui.view">
+        <field name="name">pharmacy.prescription.form.clinical</field>
+        <field name="model">pharmacy.prescription</field>
+        <field name="inherit_id" ref="sahal_pharmacy.view_pharmacy_prescription_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="before">
+                <div class="alert alert-danger m-0" role="alert"
+                     invisible="clinical_severity not in ('high', 'critical') or clinical_ack_by_id">
+                    <i class="fa fa-exclamation-triangle me-1" title="Clinical warning"/>
+                    <strong>Clinical warnings — review before verifying</strong>
+                    <field name="clinical_warning" nolabel="1" readonly="1"/>
+                </div>
+                <div class="alert alert-warning m-0" role="alert"
+                     invisible="clinical_severity not in ('low', 'moderate')">
+                    <field name="clinical_warning" nolabel="1" readonly="1"/>
+                </div>
+                <div class="alert alert-info m-0" role="alert"
+                     invisible="not clinical_ack_by_id">
+                    Clinical warnings reviewed by
+                    <field name="clinical_ack_by_id" nolabel="1" readonly="1" class="oe_inline"/>
+                    on <field name="clinical_ack_on" nolabel="1" readonly="1" class="oe_inline"/>.
+                </div>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button name="action_acknowledge_clinical" type="object"
+                        string="Review Warnings" class="btn-secondary"
+                        groups="sahal_pharmacy.group_pharmacy_pharmacist"
+                        invisible="clinical_severity == 'none' or clinical_ack_by_id"/>
+            </xpath>
+            <xpath expr="//field[@name='patient_allergies']" position="after">
+                <field name="clinical_severity" readonly="1"/>
+                <field name="clinical_ack_note"
+                       placeholder="Why it is safe to proceed"
+                       invisible="clinical_severity == 'none'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Coded allergies on the patient -->
+    <record id="view_partner_form_allergy_ingredients" model="ir.ui.view">
+        <field name="name">res.partner.form.pharmacy.allergies</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="sahal_pharmacy.res_partner_form_pharmacy"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='allergies']" position="before">
+                <field name="allergy_ingredient_ids" widget="many2many_tags"
+                       placeholder="Penicillin, Sulfonamides..."/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

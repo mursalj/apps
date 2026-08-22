@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="seq_utility_meter_reading" model="ir.sequence">
+            <field name="name">Utility Meter Reading</field>
+            <field name="code">utility.meter.reading</field>
+            <field name="prefix">RDG/%(year)s/</field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_utility_service_account" model="ir.sequence">
+            <field name="name">Utility Service Account</field>
+            <field name="code">utility.service.account</field>
+            <field name="prefix">%(year)s/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_utility_billing_run" model="ir.sequence">
+            <field name="name">Utility Billing Run</field>
+            <field name="code">utility.billing.run</field>
+            <field name="prefix">BRUN/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <!-- A default cycle so a fresh install can bill immediately. Calendar month,
+             payable within 14 days; utilities that read mid-month change anchor_day. -->
+        <record id="billing_cycle_monthly" model="utility.billing.cycle">
+            <field name="name">Monthly</field>
+            <field name="frequency">monthly</field>
+            <field name="anchor_day">1</field>
+            <field name="due_days">14</field>
+        </record>
+
+        <!-- Consumption above this multiple of a meter's recent average is flagged
+             high-usage (BRD 4.2 default 150%). Tunable without a code change. -->
+        <record id="config_high_usage_factor" model="ir.config_parameter">
+            <field name="key">utility_management.high_usage_factor</field>
+            <field name="value">1.5</field>
+        </record>
+
+        <!-- ...and below half of it, low-usage: a meter that suddenly reads near zero is
+             as much a revenue signal as one that spikes (SRS 9). -->
+        <record id="config_low_usage_factor" model="ir.config_parameter">
+            <field name="key">utility_management.low_usage_factor</field>
+            <field name="value">0.5</field>
+        </record>
+
+        <!-- A wrapped dial is accepted only when the resulting usage is within this
+             multiple of the meter's own history. Higher values trust rollovers more and
+             risk billing a mis-keyed digit as a million units. -->
+        <record id="config_rollover_tolerance" model="ir.config_parameter">
+            <field name="key">utility_management.rollover_tolerance</field>
+            <field name="value">3.0</field>
+        </record>
+
+    </data>
+
+    <data noupdate="0">
+        <!-- Auto-bill meters whose billing cycle is due. Daily so a meter added or read
+             mid-cycle is picked up on its next due date. Drafts only. -->
+        <record id="ir_cron_utility_billing" model="ir.cron">
+            <field name="name">Utilities: Generate Due Bills</field>
+            <field name="model_id" ref="model_utility_meter_reading"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_generate_bills()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">True</field>
+            <field name="user_id" ref="base.user_root"/>
+        </record>
+    </data>
+</odoo>

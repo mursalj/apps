@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_utility_root"
+              name="Utilities"
+              web_icon="utility_management,static/description/icon.png"
+              groups="utility_management.group_utility_technician"
+              sequence="46"/>
+
+    <menuitem id="menu_utility_operations"
+              name="Operations"
+              parent="menu_utility_root"
+              sequence="10"/>
+
+    <menuitem id="menu_utility_accounts"
+              name="Service Accounts"
+              action="action_utility_service_account"
+              parent="menu_utility_operations"
+              sequence="5"/>
+
+    <menuitem id="menu_utility_meters"
+              name="Meters"
+              action="action_utility_meter"
+              parent="menu_utility_operations"
+              sequence="10"/>
+
+    <menuitem id="menu_utility_readings"
+              name="Meter Readings"
+              action="action_utility_reading"
+              parent="menu_utility_operations"
+              sequence="20"/>
+
+    <menuitem id="menu_utility_billing_runs"
+              name="Billing Runs"
+              action="action_utility_billing_run"
+              parent="menu_utility_operations"
+              groups="utility_management.group_utility_billing"
+              sequence="25"/>
+
+    <menuitem id="menu_utility_billing"
+              name="Generate Invoices"
+              action="action_utility_billing_wizard"
+              parent="menu_utility_operations"
+              groups="utility_management.group_utility_billing"
+              sequence="30"/>
+
+    <menuitem id="menu_utility_installations"
+              name="Meter History"
+              action="action_utility_installation"
+              parent="menu_utility_operations"
+              sequence="15"/>
+
+    <menuitem id="menu_utility_exceptions"
+              name="Reading Exceptions"
+              action="action_utility_exceptions"
+              parent="menu_utility_operations"
+              groups="utility_management.group_utility_billing"
+              sequence="22"/>
+
+    <menuitem id="menu_utility_reporting"
+              name="Reporting"
+              parent="menu_utility_root"
+              groups="utility_management.group_utility_billing"
+              sequence="80"/>
+
+    <menuitem id="menu_utility_consumption_analysis"
+              name="Consumption Analysis"
+              action="action_utility_consumption_analysis"
+              parent="menu_utility_reporting"
+              sequence="10"/>
+
+    <menuitem id="menu_utility_billing_analysis"
+              name="Billing Analysis"
+              action="action_utility_billing_analysis"
+              parent="menu_utility_reporting"
+              sequence="20"/>
+
+    <menuitem id="menu_utility_config"
+              name="Configuration"
+              parent="menu_utility_root"
+              groups="utility_management.group_utility_manager"
+              sequence="90"/>
+
+    <menuitem id="menu_utility_tariffs"
+              name="Tariffs"
+              action="action_utility_tariff"
+              parent="menu_utility_config"
+              sequence="10"/>
+
+    <menuitem id="menu_utility_billing_cycles"
+              name="Billing Cycles"
+              action="action_utility_billing_cycle"
+              parent="menu_utility_config"
+              sequence="20"/>
+
+</odoo>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- SRS 37: the wording is a utility's to change, so these are ordinary mail
+         templates with the SRS variables available. noupdate so an edited template is
+         not overwritten by the next module upgrade. -->
+    <data noupdate="1">
+
+        <record id="mail_template_utility_invoice" model="mail.template">
+            <field name="name">Utility: Invoice Issued</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="subject">Your {{ object.utility_account_id.utility_type or 'utility' }} bill {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin:0px;padding:0px;font-size:13px;">
+                    <p>Dear <t t-out="object.partner_id.name or ''"/>,</p>
+                    <p>
+                        Your bill for account
+                        <strong t-out="object.utility_account_id.name or ''"/>
+                        is now available.
+                    </p>
+                    <ul>
+                        <li>Service period:
+                            <t t-out="object.utility_period_start or ''"/> —
+                            <t t-out="object.utility_period_end or ''"/></li>
+                        <li>Amount due:
+                            <strong t-out="format_amount(object.amount_total, object.currency_id)"/></li>
+                        <li>Due date: <t t-out="object.invoice_date_due or ''"/></li>
+                    </ul>
+                    <p t-if="object.utility_is_estimated">
+                        This bill is based on an <strong>estimated</strong> reading and will
+                        be corrected against your next actual reading.
+                    </p>
+                    <p>Thank you,<br/><t t-out="object.company_id.name or ''"/></p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <record id="mail_template_utility_payment" model="mail.template">
+            <field name="name">Utility: Payment Received</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="subject">Payment received — {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin:0px;padding:0px;font-size:13px;">
+                    <p>Dear <t t-out="object.partner_id.name or ''"/>,</p>
+                    <p>
+                        We have received your payment against
+                        <strong t-out="object.name or ''"/>. Your outstanding balance is now
+                        <strong t-out="format_amount(object.amount_residual, object.currency_id)"/>.
+                    </p>
+                    <p>Thank you,<br/><t t-out="object.company_id.name or ''"/></p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <record id="mail_template_utility_overdue" model="mail.template">
+            <field name="name">Utility: Overdue Notice</field>
+            <field name="model_id" ref="model_utility_service_account"/>
+            <field name="subject">Overdue balance on account {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin:0px;padding:0px;font-size:13px;">
+                    <p>Dear <t t-out="object.partner_id.name or ''"/>,</p>
+                    <p>
+                        Account <strong t-out="object.name or ''"/> has an outstanding
+                        balance of
+                        <strong t-out="format_amount(object.balance, object.currency_id)"/>.
+                    </p>
+                    <p>Please settle it to avoid interruption of service.</p>
+                    <p>Regards,<br/><t t-out="object.company_id.name or ''"/></p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <record id="mail_template_utility_reading_reminder" model="mail.template">
+            <field name="name">Utility: Meter Reading Reminder</field>
+            <field name="model_id" ref="model_utility_service_account"/>
+            <field name="subject">Meter reading due — account {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin:0px;padding:0px;font-size:13px;">
+                    <p>Dear <t t-out="object.partner_id.name or ''"/>,</p>
+                    <p>
+                        We are about to read the meter on account
+                        <strong t-out="object.name or ''"/> at
+                        <t t-out="object.street or ''"/>. Please make sure the meter is
+                        accessible — an unread meter has to be billed on an estimate.
+                    </p>
+                    <p>Regards,<br/><t t-out="object.company_id.name or ''"/></p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <record id="mail_template_utility_estimated" model="mail.template">
+            <field name="name">Utility: Estimated Bill Notice</field>
+            <field name="model_id" ref="account.model_account_move"/>
+            <field name="subject">Estimated bill {{ object.name }}</field>
+            <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="partner_to">{{ object.partner_id.id }}</field>
+            <field name="body_html" type="html">
+                <div style="margin:0px;padding:0px;font-size:13px;">
+                    <p>Dear <t t-out="object.partner_id.name or ''"/>,</p>
+                    <p>
+                        We could not read your meter this period, so bill
+                        <strong t-out="object.name or ''"/> for
+                        <strong t-out="format_amount(object.amount_total, object.currency_id)"/>
+                        is based on an estimate of your usual consumption.
+                    </p>
+                    <p>
+                        When we next take an actual reading, the difference is corrected
+                        automatically — you will never pay twice for the same units.
+                    </p>
+                    <p>Regards,<br/><t t-out="object.company_id.name or ''"/></p>
+                </div>
+            </field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

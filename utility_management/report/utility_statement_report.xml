@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- SRS 36: one ledger per service account — date, transaction, debit, credit,
+         running balance — so a customer with two connections can see which one owes. -->
+    <template id="report_utility_statement_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <div class="row mb-3">
+                    <div class="col-7">
+                        <h3 class="mb-0">Account Statement</h3>
+                        <div><span t-field="doc.name"/> — <span t-field="doc.utility_type"/></div>
+                    </div>
+                    <div class="col-5 text-end">
+                        <div><strong>Customer:</strong> <span t-field="doc.partner_id.name"/></div>
+                        <div t-if="doc.connection_date">
+                            <strong>Connected:</strong> <span t-field="doc.connection_date"/>
+                        </div>
+                        <div><strong>Status:</strong> <span t-field="doc.state"/></div>
+                    </div>
+                </div>
+
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Transaction</th>
+                            <th>Period</th>
+                            <th class="text-end">Debit</th>
+                            <th class="text-end">Credit</th>
+                            <th class="text-end">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="statement_lines.get(doc.id, [])" t-as="row">
+                            <td><span t-esc="row['date']"/></td>
+                            <td><span t-esc="row['label']"/></td>
+                            <td>
+                                <t t-if="row['period_start']">
+                                    <span t-esc="row['period_start']"/> — <span t-esc="row['period_end']"/>
+                                </t>
+                            </td>
+                            <td class="text-end">
+                                <span t-esc="row['debit']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                            </td>
+                            <td class="text-end">
+                                <span t-esc="row['credit']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                            </td>
+                            <td class="text-end">
+                                <span t-esc="row['balance']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                            </td>
+                        </tr>
+                        <tr t-if="not statement_lines.get(doc.id)">
+                            <td colspan="6" class="text-muted">
+                                No posted transactions on this account yet.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="row justify-content-end">
+                    <div class="col-4">
+                        <table class="table table-sm">
+                            <tr class="border-black o_total">
+                                <td><strong>Amount outstanding</strong></td>
+                                <td class="text-end">
+                                    <strong><span t-field="doc.balance"
+                                          t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="report_utility_statement">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="utility_management.report_utility_statement_document"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_utility_statement" model="ir.actions.report">
+        <field name="name">Account Statement</field>
+        <field name="model">utility.service.account</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">utility_management.report_utility_statement</field>
+        <field name="report_file">utility_management.report_utility_statement</field>
+        <field name="print_report_name">'Statement - %s' % object.name</field>
+        <field name="binding_model_id" ref="model_utility_service_account"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>
