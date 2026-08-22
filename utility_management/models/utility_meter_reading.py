@@ -9,12 +9,12 @@ reading, scaled by the meter multiplier:
 Three things this module refuses to do, all of them deliberate:
 
 * **It does not reject a reading.** A dial that reads lower than last month is a fact,
-  whatever caused it — a rollover, a swap, a mis-key, or tampering. Refusing to store it
+  whatever caused it - a rollover, a swap, a mis-key, or tampering. Refusing to store it
   (which is what this model used to do) means the field worker records nothing at all and
   the truth is lost. Every anomaly is captured, classified and queued for review instead
   (SRS 9), and only a clean or approved reading reaches a bill.
 * **It does not silently bill a negative.** A negative movement after a BILLED estimate is
-  an over-estimate that has to come back to the customer as a credit — see
+  an over-estimate that has to come back to the customer as a credit - see
   _trueup_state and _prepare_invoice_lines.
 * **It does not run a query per record.** Both the previous-reading lookup and the
   baseline average are resolved for the whole recordset in one pass; a billing run over
@@ -100,7 +100,7 @@ class UtilityMeterReading(models.Model):
         ('tampered', 'Signs of Tampering'),
     ], string='Meter Condition', default='ok', tracking=True)
     access_problem = fields.Char('Access Problem',
-                                 help='Locked gate, dog, occupier absent — why the meter '
+                                 help='Locked gate, dog, occupier absent - why the meter '
                                       'could not be read normally.')
     latitude = fields.Float('Latitude', digits=(10, 7))
     longitude = fields.Float('Longitude', digits=(10, 7))
@@ -220,7 +220,7 @@ class UtilityMeterReading(models.Model):
         previous_reading is stored and depends on the meter's ordering, not on this row's
         own values, so Odoo cannot know that inserting a back-dated reading invalidates the
         ones after it. Without this, a late entry leaves every later reading quoting the
-        wrong opening figure and billing the wrong consumption — silently.
+        wrong opening figure and billing the wrong consumption - silently.
         """
         # The new rows have to be in the database before anything recomputes against
         # them: the successors' previous_reading is resolved with a SELECT, and a reading
@@ -274,7 +274,7 @@ class UtilityMeterReading(models.Model):
             rec.previous_reading = previous
 
     def _sort_key(self):
-        """Order readings by date, then id — the same order the list view shows."""
+        """Order readings by date, then id - the same order the list view shows."""
         self.ensure_one()
         return (self.reading_date or fields.Datetime.now(), self._origin.id or 0)
 
@@ -329,7 +329,7 @@ class UtilityMeterReading(models.Model):
         A 6-digit meter reading 999,900 last month and 000,150 this month has used 250
         units, not minus 999,750. The wrap is only accepted when the resulting figure is
         in the same league as the meter's own history (rollover_tolerance), because the
-        far more common cause of a lower dial is a mis-keyed digit — and treating that as
+        far more common cause of a lower dial is a mis-keyed digit - and treating that as
         a rollover would bill the customer for a million units.
         """
         tolerance = self._rollover_tolerance()
@@ -381,7 +381,7 @@ class UtilityMeterReading(models.Model):
     # Validation (SRS 9)
     # ------------------------------------------------------------------
     def _evaluate_exceptions(self):
-        """Classify each reading and record why. Never raises — that is the point.
+        """Classify each reading and record why. Never raises - that is the point.
 
         A reviewed reading is left alone: once a human has ruled on it, an unrelated edit
         elsewhere must not quietly reopen or close the case.
@@ -506,7 +506,7 @@ class UtilityMeterReading(models.Model):
         if not self.env.user.has_group('utility_management.group_utility_billing'):
             raise UserError(_(
                 "Only a Billing Specialist or Utility Manager may rule on a reading "
-                "exception — this is a billing control, not a field decision."))
+                "exception - this is a billing control, not a field decision."))
 
     def action_approve_exception(self):
         """Accept the reading as it stands; it becomes billable."""
@@ -625,7 +625,7 @@ class UtilityMeterReading(models.Model):
             'reading_date': reading_date,
             'reading_type': 'estimated',
             'present_reading': previous + (consumption / multiplier if multiplier else 0.0),
-            'note': _('Estimated by the %s method — no actual reading available.',
+            'note': _('Estimated by the %s method - no actual reading available.',
                       account.estimation_method or 'average'),
         })
 
@@ -644,7 +644,7 @@ class UtilityMeterReading(models.Model):
     def _prepare_invoice_lines(self, apply_penalties=False, overdue_amount=0.0):
         """Return account.move line commands for this reading's consumption.
 
-        The arithmetic all lives in utility.tariff.compute_charges (SRS 13) — usage
+        The arithmetic all lives in utility.tariff.compute_charges (SRS 13) - usage
         blocks, the fixed base charge, fees, minimum/maximum adjustment, discounts,
         subsidies and, when the caller has checked the account's balance, penalties. This
         method only labels the result and turns it into ORM commands, so the bill a
@@ -667,7 +667,7 @@ class UtilityMeterReading(models.Model):
         if self.consumption < 0:
             return [(0, 0, {
                 'product_id': product.id,
-                'name': _('%(name)s — over-estimate credit (%(m)s)',
+                'name': _('%(name)s - over-estimate credit (%(m)s)',
                           name=tariff.name, m=meter.name),
                 'quantity': self.consumption,  # negative: reduces the bill
                 'price_unit': tariff.flat_rate or (
@@ -681,7 +681,7 @@ class UtilityMeterReading(models.Model):
                                            overdue_amount=overdue_amount):
             # Usage lines name the meter and its dial movement; a flat fee or a discount
             # applies to the account, not to a dial, so repeating the meter would be noise.
-            label = ('%s — %s' % (line['label'], meter_detail)
+            label = ('%s - %s' % (line['label'], meter_detail)
                      if line['kind'] in ('usage', 'base') else line['label'])
             commands.append((0, 0, {
                 'product_id': product.id,
@@ -697,8 +697,8 @@ class UtilityMeterReading(models.Model):
 
         One bill per account is what the SRS asks for (5.2): a customer with electricity
         and water gets two bills, each with its own period, readings and balance, not one
-        merged document. Readings that are not billable — unreviewed exceptions, superseded
-        estimates, suspended-for-good accounts — are skipped rather than aborting the run.
+        merged document. Readings that are not billable - unreviewed exceptions, superseded
+        estimates, suspended-for-good accounts - are skipped rather than aborting the run.
 
         The invoice is dated at the END of the service period, not today (a run executed on
         the 3rd for December must be a December bill), and the due date comes from the
@@ -770,7 +770,7 @@ class UtilityMeterReading(models.Model):
         """Auto-bill service accounts whose billing cycle is due.
 
         Due-ness is a property of the ACCOUNT's cycle (last_billed_date + frequency), not
-        of the meter — a customer with three meters on one account gets one bill, on one
+        of the meter - a customer with three meters on one account gets one bill, on one
         schedule. Drafts only; nothing is posted or sent automatically.
         """
         Account = self.env['utility.service.account'].sudo()

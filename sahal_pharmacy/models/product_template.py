@@ -39,7 +39,7 @@ DOSAGE_FORMS = [
 ]
 
 # What kind of product this is. A pharmacy sells more than drugs, and the rules differ
-# per kind — this is the field every downstream rule reads.
+# per kind - this is the field every downstream rule reads.
 PHARMA_TYPES = [
     ('prescription', 'Prescription Medicine'),
     ('otc', 'Over-the-Counter Medicine'),
@@ -53,7 +53,7 @@ PHARMA_TYPES = [
 # prescription and must stay out of the controlled register.
 NON_MEDICINE_TYPES = ('supplement', 'device', 'cosmetic', 'other')
 
-# Types with no shelf life. They are still batch-tracked — a recall has to reach them —
+# Types with no shelf life. They are still batch-tracked - a recall has to reach them -
 # but stamping them with an expiry date would make every unit arrive expired.
 NON_EXPIRING_TYPES = ('device', 'other')
 
@@ -85,12 +85,12 @@ class ProductTemplate(models.Model):
 
     # A pharmacy does not only sell drugs. Supplements, devices and cosmetics live on
     # the same shelves, are bought from the same suppliers and are rung up on the same
-    # till — but they are NOT prescription items, and treating everything as a medicine
+    # till - but they are NOT prescription items, and treating everything as a medicine
     # is how a vitamin ends up demanding a prescription. One field decides which rules
     # apply; everything downstream keys off it rather than guessing from flags.
     # Deliberately NO default. A field default is written to every existing row when
     # the column is created, which would classify the whole catalogue before the
-    # migration could look at it — including turning prescription-only medicines into
+    # migration could look at it - including turning prescription-only medicines into
     # over-the-counter ones. New pharmacy products get their default from the Medicines
     # action's context instead.
     pharma_type = fields.Selection(PHARMA_TYPES, string='Product Type',
@@ -137,7 +137,7 @@ class ProductTemplate(models.Model):
         'pharmacy.active.ingredient', 'product_active_ingredient_rel', 'product_id',
         'ingredient_id', string='Active Ingredients',
         help='What the product actually contains. Drives allergy screening and '
-             'equivalence — a brand name cannot.')
+             'equivalence - a brand name cannot.')
     generic_id = fields.Many2one(
         'pharmacy.generic', string='Generic', index=True,
         help='The generic this product is a brand of. Products sharing a generic are '
@@ -170,12 +170,12 @@ class ProductTemplate(models.Model):
     is_hazardous = fields.Boolean('Hazardous')
     is_high_alert = fields.Boolean(
         'High-Alert Medicine',
-        help='A medicine that causes significant harm when used in error — insulin, '
+        help='A medicine that causes significant harm when used in error - insulin, '
              'anticoagulants, concentrated electrolytes. Warns at dispensing.')
     is_pediatric = fields.Boolean('Pediatric')
     is_veterinary = fields.Boolean('Veterinary')
-    temperature_min = fields.Float('Min Temperature (°C)')
-    temperature_max = fields.Float('Max Temperature (°C)')
+    temperature_min = fields.Float('Min Temperature ( C)')
+    temperature_max = fields.Float('Max Temperature ( C)')
 
     shelf_life_warning = fields.Boolean(
         'Missing Shelf Life', compute='_compute_shelf_life_warning',
@@ -187,7 +187,7 @@ class ProductTemplate(models.Model):
         help='Must be kept refrigerated; shown on picking and delivery documents.')
     storage_instructions = fields.Text(
         'Storage Instructions',
-        help='e.g. Store below 25 °C, protect from light.')
+        help='e.g. Store below 25  C, protect from light.')
 
     @api.depends('pharma_type', 'requires_prescription')
     def _compute_is_otc(self):
@@ -241,12 +241,12 @@ class ProductTemplate(models.Model):
 
         product_expiry stamps a new lot with `expiration_date = today + expiration_time`.
         With expiration_time left at zero that is TODAY, so every batch is expired on
-        arrival and the expiry block refuses to sell any of it — which looks like the
+        arrival and the expiry block refuses to sell any of it - which looks like the
         expiry rules misfiring when the real fault is an unset field.
 
         A WARNING, not a constraint, on purpose. A constraint would refuse every write to
         the medicines already carrying this mistake, so the first person to touch one
-        would be stopped from fixing anything at all — including the shelf life.
+        would be stopped from fixing anything at all - including the shelf life.
         """
         for product in self:
             product.shelf_life_warning = bool(
@@ -291,7 +291,7 @@ class ProductTemplate(models.Model):
             self.pharma_generic_name = generic.name
 
     def action_view_equivalents(self):
-        """Other products sharing this generic — the substitution shortlist (PRD 34)."""
+        """Other products sharing this generic - the substitution shortlist (PRD 34)."""
         self.ensure_one()
         if not self.generic_id:
             raise UserError(_(
@@ -361,8 +361,8 @@ class ProductTemplate(models.Model):
     def create(self, vals_list):
         """Same defaults for medicines created outside the form (bulk import, code).
 
-        Only fills a field the caller left unspecified, so an explicit choice — e.g.
-        available_in_pos=False for a wholesale-only SKU — is always respected.
+        Only fills a field the caller left unspecified, so an explicit choice - e.g.
+        available_in_pos=False for a wholesale-only SKU - is always respected.
         """
         for vals in vals_list:
             if vals.get('is_medicine'):

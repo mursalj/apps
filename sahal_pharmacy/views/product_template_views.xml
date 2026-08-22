@@ -82,13 +82,13 @@
                     <group>
                         <group string="Storage">
                             <field name="requires_cold_storage"/>
-                            <label for="temperature_min" string="Temperature range (°C)"/>
+                            <label for="temperature_min" string="Temperature range ( C)"/>
                             <div class="o_row">
                                 <field name="temperature_min" nolabel="1" class="oe_inline"/>
                                 <span class="mx-1">to</span>
                                 <field name="temperature_max" nolabel="1" class="oe_inline"/>
                             </div>
-                            <field name="storage_instructions" placeholder="e.g. Store below 25 °C, protect from light"/>
+                            <field name="storage_instructions" placeholder="e.g. Store below 25  C, protect from light"/>
                         </group>
                         <group string="Batch &amp; Expiry">
                             <!-- Native product_expiry / stock fields, surfaced here so a

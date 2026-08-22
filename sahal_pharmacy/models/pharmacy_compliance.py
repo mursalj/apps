@@ -8,7 +8,7 @@ What an inspector asks for, and what the module could not produce:
 * **Who made this?** Manufacturers were a checkbox on a contact. A manufacturer has a
   registration, a country and an approval decision behind it.
 * **Where are the papers?** Product registrations, certificates of analysis, import
-  permits — documents with an issuing authority and an expiry date that somebody has to
+  permits - documents with an issuing authority and an expiry date that somebody has to
   be told about BEFORE it lapses.
 * **Who authorised that?** The module already refuses things (expired stock, unapproved
   suppliers, credit holds, clinical warnings) and lets an authorised person override

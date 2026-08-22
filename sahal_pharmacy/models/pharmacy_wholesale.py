@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Wholesale pharmaceutical distribution (PRD 46-51, 111).
 
-A wholesaler sells to pharmacies, clinics, hospitals, NGOs and government agencies —
+A wholesaler sells to pharmacies, clinics, hospitals, NGOs and government agencies -
 licensed businesses, on credit, in cartons, at prices that depend on who is buying and
 how much. The PRD is explicit that this must NOT run through the retail till.
 
@@ -11,7 +11,7 @@ already the wholesale flow, pricelists already express customer and volume prici
 
 * whether the buyer is **licensed** to buy medicines at all, and whether that licence
   is still valid on the day of the order;
-* a **credit hold** — a deliberate stop that survives until someone with authority
+* a **credit hold** - a deliberate stop that survives until someone with authority
   lifts it, as opposed to a limit that merely warns;
 * **minimum order quantities** in an industry that sells by the carton.
 
@@ -101,7 +101,7 @@ class ResPartner(models.Model):
                 "Placed on credit hold. %s", partner.credit_hold_reason or ''))
 
     def action_release_credit_hold(self):
-        """Only a manager lifts a hold — that is the whole point of having one."""
+        """Only a manager lifts a hold - that is the whole point of having one."""
         if not self.env.user.has_group('sahal_pharmacy.group_pharmacy_manager'):
             raise UserError(_(
                 "Releasing a credit hold is a Pharmacy Manager decision."))
@@ -234,7 +234,7 @@ class SaleOrder(models.Model):
 
         Blocking by default, unlike the supplier check: confirming a wholesale order
         promises stock to a customer and creates a receivable, and both are hard to
-        walk back. A manager can override — with the reason recorded on the order.
+        walk back. A manager can override - with the reason recorded on the order.
         """
         enforcement = self._wholesale_enforcement()
         if enforcement != 'off':
@@ -247,16 +247,16 @@ class SaleOrder(models.Model):
                     raise UserError(_(
                         "This wholesale order cannot be confirmed:\n\n%(problems)s\n\n"
                         "A Pharmacy Manager can override this from the order.",
-                        problems='\n'.join('• %s' % p for p in problems)))
+                        problems='\n'.join('* %s' % p for p in problems)))
                 order.message_post(body=_(
                     "<strong>Wholesale check</strong><br/>%s",
-                    '<br/>'.join('• %s' % p for p in problems)))
+                    '<br/>'.join('* %s' % p for p in problems)))
         return super().action_confirm()
 
     def action_confirm_wholesale_override(self):
         """Confirm despite the warnings, on a manager's authority and on the record.
 
-        The override covers the pharmacy's own commercial rules — credit limit, order
+        The override covers the pharmacy's own commercial rules - credit limit, order
         quantities, credit hold. It does NOT cover the buyer's licence: supplying
         prescription medicine to a business that is not licensed and approved to receive
         it is not a decision a manager gets to make, and the retail prescription guard
@@ -273,12 +273,12 @@ class SaleOrder(models.Model):
                 "This cannot be overridden:\n\n%(problems)s\n\nThe buyer's licence is "
                 "a legal requirement, not a pharmacy policy. Approve the account and "
                 "record a current trading licence, then confirm normally.",
-                problems='\n'.join('• %s' % p for p in blocking)))
+                problems='\n'.join('* %s' % p for p in blocking)))
         problems = self._wholesale_problems()
         self.message_post(body=_(
             "<strong>Wholesale block overridden by %(user)s</strong><br/>%(problems)s",
             user=self.env.user.display_name,
-            problems='<br/>'.join('• %s' % p for p in problems)))
+            problems='<br/>'.join('* %s' % p for p in problems)))
         # Also to the central override log, so "show me every override last month" is
         # one list rather than a search across five models' chatter.
         self.env['pharmacy.override'].log(

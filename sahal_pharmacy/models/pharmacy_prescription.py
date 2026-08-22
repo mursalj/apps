@@ -180,7 +180,7 @@ class PharmacyPrescription(models.Model):
             findings = rx.patient_id.pharmacy_screen_products(products) \
                 if rx.patient_id and products else []
             rx.clinical_warning = '\n'.join(
-                '• %s' % f['message'] for f in findings) or False
+                '* %s' % f['message'] for f in findings) or False
             rx.clinical_severity = max(
                 (f['severity'] for f in findings), key=order.index, default='none')
 
@@ -224,8 +224,8 @@ class PharmacyPrescription(models.Model):
                     "%(name)s expired on %(date)s and cannot be verified.",
                     name=rx.name, date=rx.valid_until))
             # A high or critical finding must be signed off BY NAME before the script
-            # can be verified. The warning is not a veto — the pharmacist may still
-            # proceed — but nobody gets to say afterwards that they never saw it.
+            # can be verified. The warning is not a veto - the pharmacist may still
+            # proceed - but nobody gets to say afterwards that they never saw it.
             if rx.clinical_severity in ('high', 'critical') and not rx.clinical_ack_by_id:
                 raise UserError(_(
                     "%(name)s has %(severity)s clinical warnings that have not been "
@@ -254,7 +254,7 @@ class PharmacyPrescription(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Dispensings — %s', self.name),
+            'name': _('Dispensings - %s', self.name),
             'res_model': 'pharmacy.dispense',
             'view_mode': 'list,form',
             'domain': [('prescription_id', '=', self.id)],
@@ -275,7 +275,7 @@ class PharmacyPrescription(models.Model):
         })
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Dispense — %s', self.name),
+            'name': _('Dispense - %s', self.name),
             'res_model': 'pharmacy.dispense',
             'res_id': dispense.id,
             'view_mode': 'form',

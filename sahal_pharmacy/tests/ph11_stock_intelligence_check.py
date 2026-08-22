@@ -112,7 +112,7 @@ activities = env['mail.activity'].search([
     ('res_model', '=', 'pharmacy.profile'), ('res_id', '=', branch.id)])
 check("it raises an activity for the pharmacy manager", bool(activities),
       activities.mapped('summary'))
-# Odoo emails the assignee of an activity — that is staff, not a customer. What matters
+# Odoo emails the assignee of an activity - that is staff, not a customer. What matters
 # is that nothing about stock levels goes OUTSIDE the pharmacy.
 notified = env['mail.mail'].search([('subject', 'ilike', 'Pharmacy stock')])
 outsiders = notified.mapped('recipient_ids').filtered(

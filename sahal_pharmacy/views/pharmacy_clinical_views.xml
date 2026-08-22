@@ -28,7 +28,7 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Record an interaction</p>
             <p>Pairs of active ingredients that should not be taken together, with what
-               happens and what to do. The pharmacy owns this list — it is a warning
+               happens and what to do. The pharmacy owns this list - it is a warning
                system, not a clinical database, and it never replaces a pharmacist's
                judgement.</p>
         </field>
@@ -67,7 +67,7 @@
                 <div class="alert alert-danger m-0" role="alert"
                      invisible="clinical_severity not in ('high', 'critical') or clinical_ack_by_id">
                     <i class="fa fa-exclamation-triangle me-1" title="Clinical warning"/>
-                    <strong>Clinical warnings — review before verifying</strong>
+                    <strong>Clinical warnings - review before verifying</strong>
                     <field name="clinical_warning" nolabel="1" readonly="1"/>
                 </div>
                 <div class="alert alert-warning m-0" role="alert"

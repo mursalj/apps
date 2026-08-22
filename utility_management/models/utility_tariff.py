@@ -3,14 +3,14 @@
 
 A tariff turns a consumption figure into money. Three usage structures are supported:
 
-  * flat    — one rate per unit
-  * tiered  — MARGINAL blocks: each block is charged at its own rate, so 250 kWh over
+  * flat    - one rate per unit
+  * tiered  - MARGINAL blocks: each block is charged at its own rate, so 250 kWh over
               blocks 0-100@0.10 / 101-300@0.15 costs 100*0.10 + 150*0.15. This is how
               utilities bill worldwide, and it produces the per-block invoice breakdown.
-  * base    — no usage rate; a fixed recurring service fee (e.g. an internet plan)
+  * base    - no usage rate; a fixed recurring service fee (e.g. an internet plan)
 
-Everything else the SRS asks a tariff to express — service fees, penalties, discounts,
-subsidies, minimum and maximum charges — is a CONFIGURED CHARGE LINE
+Everything else the SRS asks a tariff to express - service fees, penalties, discounts,
+subsidies, minimum and maximum charges - is a CONFIGURED CHARGE LINE
 (utility.tariff.charge), not code. A utility that wants "5% late penalty, 10 unit minimum,
 pensioner subsidy" adds three rows; nobody edits Python.
 
@@ -54,7 +54,7 @@ class UtilityTariff(models.Model):
     currency_id = fields.Many2one(
         'res.currency', default=lambda s: s.env.company.currency_id, required=True)
     unit_name = fields.Char('Unit', default='unit',
-                            help='Consumption unit shown on bills, e.g. kWh, m³.')
+                            help='Consumption unit shown on bills, e.g. kWh, m3.')
     flat_rate = fields.Monetary('Rate per Unit', currency_field='currency_id',
                                 help='Used when the structure is Flat.')
     base_charge = fields.Monetary('Fixed Base Charge', currency_field='currency_id',
@@ -77,7 +77,7 @@ class UtilityTariff(models.Model):
     # --- eligibility (SRS 11) ---
     customer_category_ids = fields.Many2many(
         'res.partner.category', string='Customer Categories',
-        help='Restrict this tariff to customers carrying one of these tags — the SRS '
+        help='Restrict this tariff to customers carrying one of these tags - the SRS '
              '"customer category" axis (domestic, commercial, government...). Empty means '
              'it applies to anyone.')
     area = fields.Char('Geographic Area',
@@ -107,7 +107,7 @@ class UtilityTariff(models.Model):
         """Blocks must climb, and only the last one may be open-ended.
 
         Without this, a tariff whose blocks are out of order, overlapping, or all
-        open-ended bills silently wrong amounts — the arithmetic still "works", it is just
+        open-ended bills silently wrong amounts - the arithmetic still "works", it is just
         not the tariff anyone approved.
         """
         for tariff in self.filtered(lambda t: t.structure == 'tiered'):
@@ -143,7 +143,7 @@ class UtilityTariff(models.Model):
         """[(lower, upper), ...] for the tiered blocks, in charging order.
 
         The upper bound of the last block is infinity when it is left empty. Everywhere
-        else an empty value is rejected by _check_block_bounds — which is the fix for the
+        else an empty value is rejected by _check_block_bounds - which is the fix for the
         old `upper_limit or inf` expression, where a block ending at 0 silently became
         "and above" and swallowed the entire consumption at its own rate.
         """
@@ -181,7 +181,7 @@ class UtilityTariff(models.Model):
         if self.base_charge:
             lines.append({
                 'kind': 'base',
-                'label': _('%s — base charge', self.name),
+                'label': _('%s - base charge', self.name),
                 'quantity': 1.0,
                 'price_unit': self.base_charge,
                 'subtotal': self.base_charge,
@@ -202,7 +202,7 @@ class UtilityTariff(models.Model):
         if self.structure == 'flat':
             lines.append({
                 'kind': 'usage',
-                'label': _('%(name)s — %(qty)s %(unit)s',
+                'label': _('%(name)s - %(qty)s %(unit)s',
                            name=self.name, qty=consumption, unit=self.unit_name),
                 'quantity': consumption,
                 'price_unit': self.flat_rate,
@@ -210,7 +210,7 @@ class UtilityTariff(models.Model):
             })
             return lines
 
-        # tiered — charge only the slice of consumption that falls inside each block
+        # tiered - charge only the slice of consumption that falls inside each block
         remaining = consumption
         for lower, upper, block in self._ordered_bounds():
             if remaining <= 0:
@@ -221,9 +221,9 @@ class UtilityTariff(models.Model):
                 continue
             lines.append({
                 'kind': 'usage',
-                'label': _('%(name)s — Block %(seq)s (%(lo)s-%(hi)s %(unit)s)',
+                'label': _('%(name)s - Block %(seq)s (%(lo)s-%(hi)s %(unit)s)',
                            name=self.name, seq=block.sequence, lo=int(lower),
-                           hi=('∞' if upper == float('inf') else int(upper)),
+                           hi=('infinity' if upper == float('inf') else int(upper)),
                            unit=self.unit_name),
                 'quantity': quantity,
                 'price_unit': block.rate,
@@ -268,7 +268,7 @@ class UtilityTariffBlock(models.Model):
     tariff_id = fields.Many2one('utility.tariff', required=True, ondelete='cascade')
     sequence = fields.Integer(default=1)
     lower_limit = fields.Float('From', compute='_compute_lower_limit',
-                               help='Where this block starts — the previous block\'s '
+                               help='Where this block starts - the previous block\'s '
                                     'upper limit. Shown so a tariff can be read at a '
                                     'glance instead of inferred.')
     upper_limit = fields.Float(
@@ -348,7 +348,7 @@ class UtilityTariffCharge(models.Model):
         return True
 
     def _compute_amount(self, consumption, running_total, overdue_amount=0.0):
-        """The money this charge adds (positive) — the caller flips the sign for credits.
+        """The money this charge adds (positive) - the caller flips the sign for credits.
 
         Minimum and maximum are ADJUSTMENTS, not charges: they top the bill up to, or trim
         it down to, the configured figure, so applying one twice cannot compound.
@@ -364,7 +364,7 @@ class UtilityTariffCharge(models.Model):
             return self.amount
         if self.computation == 'per_unit':
             return self.amount * consumption
-        # percent — a late penalty is charged on what is overdue, everything else on the
+        # percent - a late penalty is charged on what is overdue, everything else on the
         # charges accumulated so far.
         basis = overdue_amount if self.kind == 'penalty' and overdue_amount else running_total
         return basis * (self.amount / 100.0)

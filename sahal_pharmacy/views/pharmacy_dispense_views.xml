@@ -32,7 +32,7 @@
                     <div class="alert alert-warning" role="alert"
                          invisible="not has_controlled">
                         <i class="fa fa-lock me-1" title="Restricted"/>
-                        Controlled substance — pharmacist only. This hand-over will be
+                        Controlled substance - pharmacist only. This hand-over will be
                         written to the controlled drugs register.
                     </div>
 
@@ -70,7 +70,7 @@
                         </list>
                     </field>
                     <group>
-                        <field name="notes" placeholder="Counselling notes, batch remarks…"/>
+                        <field name="notes" placeholder="Counselling notes, batch remarks..."/>
                     </group>
                 </sheet>
                 <chatter/>

@@ -3,7 +3,7 @@
 
 A pharmacy may only buy medicines from a licensed, approved supplier, and must be able
 to show an inspector which supplier a batch came from. Odoo already models vendors,
-purchase orders, vendor pricelists (`product.supplierinfo`) and receipts — none of that
+purchase orders, vendor pricelists (`product.supplierinfo`) and receipts - none of that
 is rebuilt here. What Odoo has no concept of is:
 
 * a **pharmaceutical licence** with an expiry date, on the vendor;
@@ -93,7 +93,7 @@ class ResPartner(models.Model):
         """Approve this vendor to supply pharmacy products."""
         if not self.env.user.has_group('sahal_pharmacy.group_pharmacy_manager'):
             raise UserError(_(
-                "Approving a supplier is a Pharmacy Manager decision — it is the "
+                "Approving a supplier is a Pharmacy Manager decision - it is the "
                 "control that keeps unlicensed medicine out of the dispensary."))
         for partner in self:
             if partner.pharma_licence_state == 'expired':
@@ -235,7 +235,7 @@ class PurchaseOrder(models.Model):
 
     @api.model
     def _supplier_enforcement(self):
-        """'off', 'warn' or 'block' — the pharmacy's own policy."""
+        """'off', 'warn' or 'block' - the pharmacy's own policy."""
         return self.env['ir.config_parameter'].sudo().get_param(
             'sahal_pharmacy.supplier_enforcement', 'warn')
 
@@ -252,10 +252,10 @@ class PurchaseOrder(models.Model):
                         "This order cannot be confirmed:\n\n%(problems)s\n\nApprove the "
                         "supplier, or record their licence, before ordering medicines "
                         "from them.",
-                        problems='\n'.join('• %s' % p for p in problems)))
+                        problems='\n'.join('* %s' % p for p in problems)))
                 order.message_post(body=_(
                     "<strong>Pharmacy supplier warning</strong><br/>%s",
-                    '<br/>'.join('• %s' % p for p in problems)))
+                    '<br/>'.join('* %s' % p for p in problems)))
                 self.env['pharmacy.override'].log(
                     'supplier', '\n'.join(problems), record=order,
                     partner=order.partner_id)

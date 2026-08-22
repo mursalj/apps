@@ -6,7 +6,7 @@ receipts natively. What it does not know is which products are restricted, so th
 module ships the pharmacy attributes down to the client and gives the cashier a way
 to look up a verified prescription without leaving the POS.
 
-ONE POS SERVES EVERY INDUSTRY ON THIS PLATFORM — a restaurant, a hotel shop, a hardware
+ONE POS SERVES EVERY INDUSTRY ON THIS PLATFORM - a restaurant, a hotel shop, a hardware
 counter and a pharmacy all run the same point_of_sale module and share its asset bundle.
 So everything here obeys one rule:
 
@@ -14,13 +14,13 @@ So everything here obeys one rule:
 
 That applies to the fields loaded, the models loaded, and the JavaScript: the client
 patch returns immediately on a non-pharmacy till, before it touches anything. It matters
-because this module has already broken every POS on the platform once — an unconditional
+because this module has already broken every POS on the platform once - an unconditional
 `_load_pos_data_models` override made pharmacy.prescription load into every session and
 crashed the loader (PROD_PENDING_CHANGES section 1).
 
 The one thing NOT gated on the flag is compliance enforcement. Whether a prescription-only
 medicine may be sold is a legal question about the PRODUCT, not a preference of the till,
-so sale_pos_guard.py checks every order that actually contains restricted products —
+so sale_pos_guard.py checks every order that actually contains restricted products -
 otherwise unticking a checkbox would be a bypass. Orders with no pharmacy products exit
 that check immediately.
 """
@@ -49,7 +49,7 @@ class ProductTemplate(models.Model):
 
     @api.model
     def _load_pos_data_fields(self, config_id):
-        """Ship the pharmacy attributes — to pharmacy tills only.
+        """Ship the pharmacy attributes - to pharmacy tills only.
 
         A restaurant till has no use for `controlled_schedule`, and loading it there is
         both waste on every product record and pharmacy schema leaking into industries
@@ -106,9 +106,9 @@ class PosSession(models.Model):
         - the user actually has pharmacy access.
 
         The group check keeps prescriptions out of a session whose user has no
-        pharmacy role at all — even if an
-        is_pharmacy flag lingered on a config. Loading this model into every POS —
-        retail, restaurant, etc. — is both wasteful and (before this guard) fatal.
+        pharmacy role at all - even if an
+        is_pharmacy flag lingered on a config. Loading this model into every POS -
+        retail, restaurant, etc. - is both wasteful and (before this guard) fatal.
         """
         data = super()._load_pos_data_models(config)
         if config.is_pharmacy and self.env.user.has_group('sahal_pharmacy.group_pharmacy_cashier'):

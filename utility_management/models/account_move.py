@@ -22,7 +22,7 @@ class AccountMove(models.Model):
                                           string='Billed Readings')
     utility_billing_run_id = fields.Many2one(
         'utility.billing.run', string='Billing Run', index=True, copy=False,
-        help='The approved run this bill came out of — the audit trail from invoice '
+        help='The approved run this bill came out of - the audit trail from invoice '
              'back to the readings and the person who approved them.')
     utility_is_estimated = fields.Boolean(
         'Estimated Bill', copy=False,

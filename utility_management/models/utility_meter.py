@@ -2,12 +2,12 @@
 """Meter registry (SRS 7.1).
 
 A meter is the physical device. It measures one utility, has a serial, a dial width and a
-CT multiplier, and it is installed on a SERVICE ACCOUNT for a period of time — never
+CT multiplier, and it is installed on a SERVICE ACCOUNT for a period of time - never
 directly on a customer. That indirection is what lets a meter be swapped, moved or held in
 stock without losing the account's consumption history (see utility.meter.installation).
 
 Meter state is PHYSICAL (working, in maintenance, faulty, retired). The commercial state
-of the connection — active, suspended, disconnected — belongs to the service account.
+of the connection - active, suspended, disconnected - belongs to the service account.
 """
 
 from odoo import models, fields, api, _
@@ -23,7 +23,7 @@ class UtilityMeter(models.Model):
     _order = 'name'
 
     name = fields.Char('Meter No.', required=True, copy=False, index=True, tracking=True,
-                       help='Serial / barcode — the unique meter identifier.')
+                       help='Serial / barcode - the unique meter identifier.')
     utility_type = fields.Selection(UTILITY_TYPES, string='Utility', required=True,
                                     tracking=True)
     state = fields.Selection([
@@ -69,8 +69,8 @@ class UtilityMeter(models.Model):
     model_name = fields.Char('Model')
     communication_type = fields.Selection([
         ('manual', 'Manual Reading'),
-        ('amr', 'AMR — Walk/Drive-by'),
-        ('ami', 'AMI — Remote / Smart'),
+        ('amr', 'AMR - Walk/Drive-by'),
+        ('ami', 'AMI - Remote / Smart'),
     ], string='Communication', default='manual',
         help='How readings reach the system. Drives which meters a field route includes.')
     installation_date = fields.Date('Installation Date', tracking=True)
@@ -119,7 +119,7 @@ class UtilityMeter(models.Model):
             if duplicate:
                 raise ValidationError(_(
                     "Meter %s already exists. A serial number identifies one physical "
-                    "device — reusing it would merge two meters' histories.", meter.name))
+                    "device - reusing it would merge two meters' histories.", meter.name))
 
     @api.depends('tariff_id', 'account_id.tariff_id')
     def _compute_effective_tariff(self):
@@ -148,7 +148,7 @@ class UtilityMeter(models.Model):
         for meter in self:
             if meter.digits and not 1 <= meter.digits <= 12:
                 raise ValidationError(_(
-                    "Dial digits must be between 1 and 12 — %s is not a real meter.",
+                    "Dial digits must be between 1 and 12 - %s is not a real meter.",
                     meter.digits))
 
     @api.constrains('tariff_id', 'utility_type')
@@ -185,7 +185,7 @@ class UtilityMeter(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Readings — %s', self.name),
+            'name': _('Readings - %s', self.name),
             'res_model': 'utility.meter.reading',
             'view_mode': 'list,form',
             'domain': [('meter_id', '=', self.id)],

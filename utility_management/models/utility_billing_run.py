@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Billing run — the controlled path from readings to invoices (SRS 12, 34, 35).
+"""Billing run - the controlled path from readings to invoices (SRS 12, 34, 35).
 
 Before this existed, invoices were created straight out of a wizard: no period, no
 preview, no approval, no way to reproduce what a previous month actually did, and no way
@@ -11,7 +11,7 @@ A run fixes that by making the calculation a RECORD:
     draft -> review -> approved -> invoiced
 
 * **Compute** resolves, for every meter on every billable account, which reading covers
-  the period, what it consumed and what that costs — and writes one line per meter. It is
+  the period, what it consumed and what that costs - and writes one line per meter. It is
   idempotent: recomputing a draft run rebuilds the same lines from the same readings, so
   a run is reproducible (SRS 47.12).
 * **Review** is where a human looks at the totals and at the warnings the run raises
@@ -184,7 +184,7 @@ class UtilityBillingRun(models.Model):
         return self.env['utility.service.account'].search(domain)
 
     def _lines_for_account(self, account):
-        """One line per active meter on the account — estimating only if asked to."""
+        """One line per active meter on the account - estimating only if asked to."""
         self.ensure_one()
         Reading = self.env['utility.meter.reading']
         start = fields.Datetime.to_datetime(self.period_start)
@@ -211,7 +211,7 @@ class UtilityBillingRun(models.Model):
         return values
 
     def _line_values(self, account, meter, reading):
-        """A line, whether or not a reading was found — a gap has to be visible."""
+        """A line, whether or not a reading was found - a gap has to be visible."""
         self.ensure_one()
         tariff = meter.effective_tariff_id
         consumption = reading.consumption if reading else 0.0
@@ -286,7 +286,7 @@ class UtilityBillingRun(models.Model):
                 warnings.append(_(
                     "%(n)s meter(s) had no reading at all in this period.", n=missing))
 
-            run.warning_text = '\n'.join('• %s' % w for w in warnings) or False
+            run.warning_text = '\n'.join('* %s' % w for w in warnings) or False
 
     # ------------------------------------------------------------------
     # Workflow
@@ -294,7 +294,7 @@ class UtilityBillingRun(models.Model):
     def _assert_may_approve(self):
         if not self.env.user.has_group('utility_management.group_utility_manager'):
             raise UserError(_(
-                "Approving a billing run is a Utility Manager decision — it is the "
+                "Approving a billing run is a Utility Manager decision - it is the "
                 "control that stands between a miscalculated run and the customer."))
 
     def action_approve(self):
@@ -344,7 +344,7 @@ class UtilityBillingRun(models.Model):
             if run.state == 'invoiced':
                 raise UserError(_(
                     "Run %s has already produced invoices. Reverse those invoices "
-                    "instead — a billed period is not cancelled, it is corrected.",
+                    "instead - a billed period is not cancelled, it is corrected.",
                     run.name))
             run.line_ids.mapped('reading_id').write({'billing_run_id': False})
             run.state = 'cancel'
@@ -379,7 +379,7 @@ class UtilityBillingRun(models.Model):
             sent=sent, skipped=skipped))
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Notifications — %s', self.name),
+            'name': _('Notifications - %s', self.name),
             'res_model': 'utility.notification',
             'view_mode': 'list',
             'domain': [('id', 'in', notifications.ids)],
@@ -389,7 +389,7 @@ class UtilityBillingRun(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Invoices — %s', self.name),
+            'name': _('Invoices - %s', self.name),
             'res_model': 'account.move',
             'view_mode': 'list,form',
             'domain': [('utility_billing_run_id', '=', self.id)],
@@ -431,7 +431,7 @@ class UtilityBillingRunLine(models.Model):
 
     _sql_constraints = [
         ('run_meter_reading_uniq', 'unique(run_id, meter_id, reading_id)',
-         'This meter and reading are already on the run — a reading cannot be billed '
+         'This meter and reading are already on the run - a reading cannot be billed '
          'twice in the same period.'),
     ]
 

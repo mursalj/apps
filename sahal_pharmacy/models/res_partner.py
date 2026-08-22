@@ -120,7 +120,7 @@ class ResPartner(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Prescriptions — %s', self.display_name),
+            'name': _('Prescriptions - %s', self.display_name),
             'res_model': 'pharmacy.prescription',
             'view_mode': 'list,form',
             'domain': [('patient_id', '=', self.id)],

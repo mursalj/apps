@@ -182,7 +182,7 @@ class PharmacySupplierReturn(models.Model):
         for line in self.line_ids:
             lines.append((0, 0, {
                 'product_id': line.product_id.id,
-                'name': _('%(product)s — returned (%(reason)s)',
+                'name': _('%(product)s - returned (%(reason)s)',
                           product=line.product_id.display_name,
                           reason=dict(RETURN_REASONS)[self.reason]),
                 'quantity': line.quantity,

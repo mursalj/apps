@@ -3,14 +3,14 @@
 
 Every message the platform sends a customer goes through here and leaves a row behind:
 which account, which channel, which template, what was sent, whether it left the building.
-Without that log, "we told them" is an assertion; with it, it is a record — which is what
+Without that log, "we told them" is an assertion; with it, it is a record - which is what
 a billing dispute actually turns on.
 
 Two channels are implemented:
 
-* **email** — a real mail.template on the SMTP already configured for the platform. Works
+* **email** - a real mail.template on the SMTP already configured for the platform. Works
   today, no vendor to sign up with.
-* **whatsapp** — the Meta WhatsApp Cloud API. It stays INERT until credentials are
+* **whatsapp** - the Meta WhatsApp Cloud API. It stays INERT until credentials are
   configured (see _whatsapp_config): with none set, a WhatsApp notification is logged as
   'skipped' with the reason, never silently dropped and never half-sent. The
   odoo_whatsapp_integration addon already in this codebase cannot do this job: it builds
@@ -19,7 +19,7 @@ Two channels are implemented:
 
 Nothing here sends automatically on a schedule. On this platform, customer-contacting
 crons ship disabled and are turned on deliberately (docs/PROD_PENDING_CHANGES.md, cron
-state) — the same rule applies to utility notifications.
+state) - the same rule applies to utility notifications.
 """
 
 import logging

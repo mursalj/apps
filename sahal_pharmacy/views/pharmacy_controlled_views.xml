@@ -38,7 +38,7 @@
                         </group>
                     </group>
                     <group>
-                        <field name="reason" placeholder="Reference, disposal method, count variance…"/>
+                        <field name="reason" placeholder="Reference, disposal method, count variance..."/>
                     </group>
                 </sheet>
             </form>
@@ -114,7 +114,7 @@
         </field>
     </record>
 
-    <!-- Expiry reporting (BRD 6). Both open native stock quants, filtered — no custom
+    <!-- Expiry reporting (BRD 6). Both open native stock quants, filtered - no custom
          report model needed, and drill-down to the batch keeps working. -->
     <!-- model_id is stock.quant, not pharmacy.expiry.alert: Odoo hides a menu whose
          server action targets a model the user cannot access, and an AbstractModel has

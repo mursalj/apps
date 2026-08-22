@@ -50,7 +50,7 @@ r = env['utility.meter.reading'].create({
 r.action_validate()
 invoice = r._bill()
 # Post it first: a draft move has no name yet, and a bill is only announced once it is
-# real — the notification subject quotes the invoice number.
+# real - the notification subject quotes the invoice number.
 invoice.action_post()
 
 # ---------------------------------------------------------------- templates exist

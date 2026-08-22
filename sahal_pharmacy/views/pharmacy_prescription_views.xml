@@ -44,7 +44,7 @@
                     <div class="alert alert-warning" role="alert"
                          invisible="not has_controlled">
                         <i class="fa fa-lock me-1" title="Restricted"/>
-                        Contains a <strong>controlled substance</strong> — pharmacist
+                        Contains a <strong>controlled substance</strong> - pharmacist
                         dispensing only; every movement is logged to the register.
                     </div>
                     <div class="alert alert-secondary" role="alert"
@@ -119,7 +119,7 @@
                             </field>
                         </page>
                         <page string="Notes" name="notes">
-                            <field name="notes" placeholder="Clinical notes…"/>
+                            <field name="notes" placeholder="Clinical notes..."/>
                         </page>
                     </notebook>
                 </sheet>
@@ -193,7 +193,7 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Record your first prescription</p>
             <p>A prescription is a clinical authorisation. Once a pharmacist verifies it,
-               dispensing creates a real sale order and moves stock — so inventory always
+               dispensing creates a real sale order and moves stock - so inventory always
                reflects what left the shelf.</p>
         </field>
     </record>

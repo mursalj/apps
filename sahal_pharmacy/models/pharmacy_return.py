@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Customer returns (PRD 45).
 
-"Returns must be more controlled than normal retail" — because the thing coming back is
+"Returns must be more controlled than normal retail" - because the thing coming back is
 medicine, and the question is not whether to refund but whether it may ever be sold to
 anyone else. A blouse that comes back goes on the rail. A box of antibiotics that has
 been out of the pharmacy's custody has been somewhere unknown, at an unknown
@@ -219,10 +219,10 @@ class PharmacyReturn(models.Model):
         if not refundable:
             raise UserError(_(
                 "No line on this return is marked for refund. A return can be accepted "
-                "without a refund — untick nothing and there is nothing to credit."))
+                "without a refund - untick nothing and there is nothing to credit."))
         lines = [(0, 0, {
             'product_id': line.product_id.id,
-            'name': _('%(product)s — returned (%(reason)s)',
+            'name': _('%(product)s - returned (%(reason)s)',
                       product=line.product_id.display_name,
                       reason=dict(RETURN_REASONS)[self.reason]),
             'quantity': line.quantity,

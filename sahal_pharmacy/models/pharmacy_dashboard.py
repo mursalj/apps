@@ -5,7 +5,7 @@ One RPC returns every figure the board renders. Deliberately one call: a dashboa
 fires fifteen queries from the browser is slow on a good connection and unusable on a
 pharmacy's, and each round trip is another thing that can half-load.
 
-Every number is aggregated with _read_group rather than by loading records — a pharmacy
+Every number is aggregated with _read_group rather than by loading records - a pharmacy
 with 40,000 stock lines must not pull them into memory to show a headline.
 
 Two honesty rules the figures follow:
@@ -14,8 +14,8 @@ Two honesty rules the figures follow:
   invoice are different documents; adding them together double-counts whenever a POS
   order is invoiced, and pharmacies do both. Two numbers that are each true beat one
   that is nearly right.
-* **Nothing is estimated.** Where the data does not exist — no reorder rule, no cost
-  price — the figure is absent rather than guessed.
+* **Nothing is estimated.** Where the data does not exist - no reorder rule, no cost
+  price - the figure is absent rather than guessed.
 """
 
 import logging
@@ -108,7 +108,7 @@ class PharmacyDashboard(models.TransientModel):
         }
 
     # ------------------------------------------------------------------
-    # Stock health — the colour-coded part
+    # Stock health - the colour-coded part
     # ------------------------------------------------------------------
     def _stock_health(self):
         """Out / low / healthy, plus what the shelf is worth.
@@ -174,7 +174,7 @@ class PharmacyDashboard(models.TransientModel):
         """{product_id: (qty, revenue)} across BOTH channels for the period.
 
         Sales orders and POS orders are separate tables in Odoo, and a pharmacy sells
-        through both — the counter and the wholesale desk. Reading only one of them is
+        through both - the counter and the wholesale desk. Reading only one of them is
         how a dashboard quietly reports half the business.
         """
         totals = {}
@@ -214,7 +214,7 @@ class PharmacyDashboard(models.TransientModel):
         } for entry in ranked[:TOP_PRODUCTS]]
 
     def _sales_mix(self, since):
-        """Revenue split by what kind of product it is — the OTC vs prescription answer."""
+        """Revenue split by what kind of product it is - the OTC vs prescription answer."""
         totals = self._sold_lines(since)
         labels = dict(self.env['product.template']._fields['pharma_type'].selection)
         mix = {}
@@ -324,7 +324,7 @@ class PharmacyDashboard(models.TransientModel):
     def _prescriptions_with_open_warnings(self):
         """Live prescriptions carrying a serious clinical finding nobody has signed off.
 
-        Filtered in Python because clinical_severity is computed, not stored — and
+        Filtered in Python because clinical_severity is computed, not stored - and
         deliberately so. Storing it would freeze a judgement that depends on the
         interaction table and on the patient's allergies: add an interaction tomorrow and
         every stored severity written today would be wrong, which is precisely when the

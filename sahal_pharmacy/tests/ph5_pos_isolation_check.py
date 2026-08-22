@@ -135,9 +135,9 @@ except Exception as e:
 
 # ------------------------------------------------- the flag must be REACHABLE
 # Two ways this has already gone wrong:
-#   1. The toggle lived only in the POS Settings panel, which needs Settings access —
+#   1. The toggle lived only in the POS Settings panel, which needs Settings access -
 #   2. Moved onto the POS form, it landed inside <div id="restaurant_on_create"
-#      invisible="not context.get('pos_config_create_mode')"> — a block that renders
+#      invisible="not context.get('pos_config_create_mode')"> - a block that renders
 #      only while a shop is being CREATED. The field was in the arch and invisible on
 #      every existing till, so a test for "is the field present" passed while the owner
 #      still could not find the checkbox.
@@ -179,7 +179,7 @@ check("the till list shows which point of sale is the pharmacy one",
 # ---------------------------------------------------------------- the JS gate
 # Resolve the module's real location instead of hardcoding a mount point. The path used
 # to be '/mnt/extra-addons/...', which is where OUR platform happens to mount its addons
-# — on any other installation, including every buyer's, this suite died here.
+# - on any other installation, including every buyer's, this suite died here.
 import os
 from odoo.modules.module import get_module_path
 

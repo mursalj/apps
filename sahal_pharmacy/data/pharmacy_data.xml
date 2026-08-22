@@ -38,7 +38,7 @@
     <data noupdate="1">
         <!-- How hard to push back when a medicine is ordered from a supplier who is
              not approved, or whose licence has lapsed: off | warn | block.
-             'warn' by default — blocking a delivery is a business decision a pharmacy
+             'warn' by default - blocking a delivery is a business decision a pharmacy
              should make deliberately, not inherit from a module. -->
         <record id="config_supplier_enforcement" model="ir.config_parameter">
             <field name="key">sahal_pharmacy.supplier_enforcement</field>
@@ -67,7 +67,7 @@
             <field name="value">True</field>
         </record>
 
-        <!-- Wholesale confirmation: off | warn | block. Blocking by default —
+        <!-- Wholesale confirmation: off | warn | block. Blocking by default -
              confirming a wholesale order promises stock and creates a receivable, and
              a manager can still override it on the record. -->
         <record id="config_wholesale_enforcement" model="ir.config_parameter">

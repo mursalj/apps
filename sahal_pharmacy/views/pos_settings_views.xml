@@ -26,7 +26,7 @@
             <!-- Anchored on the ePos Printer setting, NOT on module_pos_restaurant.
                  The first module_pos_restaurant on this form sits inside
                  <div id="restaurant_on_create" invisible="not
-                 context.get('pos_config_create_mode')"> — a block that only renders
+                 context.get('pos_config_create_mode')"> - a block that only renders
                  while a shop is being CREATED from general settings. A field placed
                  there is in the arch, passes an "is the field present" test, and is
                  invisible on every existing point of sale. It was, and that is exactly

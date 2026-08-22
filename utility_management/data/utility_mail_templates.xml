@@ -21,7 +21,7 @@
                     </p>
                     <ul>
                         <li>Service period:
-                            <t t-out="object.utility_period_start or ''"/> —
+                            <t t-out="object.utility_period_start or ''"/> -
                             <t t-out="object.utility_period_end or ''"/></li>
                         <li>Amount due:
                             <strong t-out="format_amount(object.amount_total, object.currency_id)"/></li>
@@ -41,7 +41,7 @@
         <record id="mail_template_utility_payment" model="mail.template">
             <field name="name">Utility: Payment Received</field>
             <field name="model_id" ref="account.model_account_move"/>
-            <field name="subject">Payment received — {{ object.name }}</field>
+            <field name="subject">Payment received - {{ object.name }}</field>
             <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
             <field name="partner_to">{{ object.partner_id.id }}</field>
             <field name="body_html" type="html">
@@ -84,7 +84,7 @@
         <record id="mail_template_utility_reading_reminder" model="mail.template">
             <field name="name">Utility: Meter Reading Reminder</field>
             <field name="model_id" ref="model_utility_service_account"/>
-            <field name="subject">Meter reading due — account {{ object.name }}</field>
+            <field name="subject">Meter reading due - account {{ object.name }}</field>
             <field name="email_from">{{ (object.company_id.email_formatted or user.email_formatted) }}</field>
             <field name="partner_to">{{ object.partner_id.id }}</field>
             <field name="body_html" type="html">
@@ -94,7 +94,7 @@
                         We are about to read the meter on account
                         <strong t-out="object.name or ''"/> at
                         <t t-out="object.street or ''"/>. Please make sure the meter is
-                        accessible — an unread meter has to be billed on an estimate.
+                        accessible - an unread meter has to be billed on an estimate.
                     </p>
                     <p>Regards,<br/><t t-out="object.company_id.name or ''"/></p>
                 </div>
@@ -120,7 +120,7 @@
                     </p>
                     <p>
                         When we next take an actual reading, the difference is corrected
-                        automatically — you will never pay twice for the same units.
+                        automatically - you will never pay twice for the same units.
                     </p>
                     <p>Regards,<br/><t t-out="object.company_id.name or ''"/></p>
                 </div>

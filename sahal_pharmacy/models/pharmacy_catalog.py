@@ -3,18 +3,18 @@
 
 Three things the PRD insists must be DATA, not code:
 
-* **Dosage forms** — "administrators should be able to create additional dosage
+* **Dosage forms** - "administrators should be able to create additional dosage
   forms". They were a hard-coded Selection, so adding "Ampoule" meant a developer and
   a deploy. A pharmacy in one country lists sachets and vials; another lists pessaries.
-* **Active ingredients** — a molecule is a record, not a word in a product name. Once
+* **Active ingredients** - a molecule is a record, not a word in a product name. Once
   it is a record, "what else contains paracetamol", allergy matching and substitution
   become queries instead of guesses.
-* **Generics** — the PRD's Generic -> Brand A / Brand B / Brand C tree. Today the
+* **Generics** - the PRD's Generic -> Brand A / Brand B / Brand C tree. Today the
   module holds `pharma_generic_name` and `brand_name` as two unrelated strings, so
   nothing can find the equivalents of a product. A generic is now a record that its
   brands point at, which is what makes substitution possible at all.
 
-None of these replace anything Odoo provides — they are the pharmaceutical vocabulary
+None of these replace anything Odoo provides - they are the pharmaceutical vocabulary
 Odoo has no opinion about.
 """
 
@@ -53,7 +53,7 @@ class PharmacyDosageForm(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Products — %s', self.name),
+            'name': _('Products - %s', self.name),
             'res_model': 'product.template',
             'view_mode': 'list,form',
             'domain': [('dosage_form_id', '=', self.id)],
@@ -90,7 +90,7 @@ class PharmacyActiveIngredient(models.Model):
     # from EVERY product containing it, whatever the brand on the box.
     allergy_alias = fields.Char(
         'Allergy Aliases',
-        help='Other names patients use for this substance, comma separated — e.g. '
+        help='Other names patients use for this substance, comma separated - e.g. '
              '"penicillin" for amoxicillin. Matched when screening a patient\'s '
              'recorded allergies.')
     is_antibiotic = fields.Boolean('Antibiotic')
@@ -133,7 +133,7 @@ class PharmacyGeneric(models.Model):
     name = fields.Char('Generic Name', required=True, index=True)
     active_ingredient_ids = fields.Many2many(
         'pharmacy.active.ingredient', string='Active Ingredients')
-    strength = fields.Char('Strength', help='e.g. 500 mg — the strength brands must '
+    strength = fields.Char('Strength', help='e.g. 500 mg - the strength brands must '
                                             'match to be considered equivalent.')
     dosage_form_id = fields.Many2one('pharmacy.dosage.form', string='Dosage Form')
     atc_code = fields.Char('ATC Code')
@@ -154,7 +154,7 @@ class PharmacyGeneric(models.Model):
         for generic in self:
             if not generic.active_ingredient_ids:
                 raise ValidationError(_(
-                    "Generic '%s' needs at least one active ingredient — that is what "
+                    "Generic '%s' needs at least one active ingredient - that is what "
                     "makes two products equivalent.", generic.name))
 
     def action_view_products(self):

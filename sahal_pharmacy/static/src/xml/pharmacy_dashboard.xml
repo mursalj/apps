@@ -80,7 +80,7 @@
                             <div class="o_pd_label">Healthy lines</div>
                             <div class="o_pd_value o_pd_success" t-esc="num(state.data.stock.healthy)"/>
                             <div class="o_pd_sub">
-                                of <t t-esc="num(state.data.stock.medicines)"/> ·
+                                of <t t-esc="num(state.data.stock.medicines)"/> -
                                 stock worth <t t-esc="money(state.data.stock.stock_value)"/>
                             </div>
                         </div>
@@ -93,14 +93,14 @@
                                 <span class="o_pd_danger o_pd_clickable"
                                       t-on-click="() => this.open('expired')"
                                       t-esc="num(state.data.expiry.expired_lines)"/>
-                                <span class="o_pd_sub"> expired · </span>
+                                <span class="o_pd_sub"> expired - </span>
                                 <span class="o_pd_warning o_pd_clickable"
                                       t-on-click="() => this.open('near_expiry')"
                                       t-esc="num(state.data.expiry.near_lines)"/>
                                 <span class="o_pd_sub"> soon</span>
                             </div>
                             <div class="o_pd_sub">
-                                <t t-esc="money(state.data.expiry.expired_value)"/> written off ·
+                                <t t-esc="money(state.data.expiry.expired_value)"/> written off -
                                 within <t t-esc="state.data.expiry.near_days"/> days
                             </div>
                         </div>
@@ -181,7 +181,7 @@
                                     class="o_pd_clickable" t-on-click="() => this.openProduct(item.id)">
                                     <td>
                                         <t t-esc="item.name"/>
-                                        <span class="o_pd_sub" t-if="item.type"> · <t t-esc="item.type"/></span>
+                                        <span class="o_pd_sub" t-if="item.type"> - <t t-esc="item.type"/></span>
                                     </td>
                                     <td class="o_pd_right o_pd_sub" t-esc="num(item.qty)"/>
                                     <td class="o_pd_right" t-esc="money(item.revenue)"/>

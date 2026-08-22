@@ -116,7 +116,7 @@ class PharmacyControlledLog(models.Model):
         if set(vals) - {'balance_after'}:
             raise UserError(_(
                 "Controlled drugs register entries cannot be edited. Post a correcting "
-                "Adjustment entry instead — the original entry stays on record."))
+                "Adjustment entry instead - the original entry stays on record."))
         return super().write(vals)
 
     def unlink(self):

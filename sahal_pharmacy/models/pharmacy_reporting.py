@@ -2,13 +2,13 @@
 """Reporting hooks (PRD 78-84).
 
 The module had no graph or pivot view at all, so none of the PRD's report families
-could be answered — not "how much of our revenue is prescription versus over the
+could be answered - not "how much of our revenue is prescription versus over the
 counter", not "which supplier's stock keeps expiring on us", not "who is close to their
 credit limit".
 
 Almost none of that needs a new table. Odoo's own `sale.report` and `stock.quant`
 already carry the numbers; what they lack is the pharmaceutical dimension to group by.
-So this file adds the dimension — product type, dosage form, generic, supplier — to
+So this file adds the dimension - product type, dosage form, generic, supplier - to
 models that already exist, and the views do the rest.
 
 `stock.quant` gains the expiry dimensions for the same reason: the near-expiry list was
@@ -55,7 +55,7 @@ class StockQuant(models.Model):
     days_to_expiry = fields.Integer('Days to Expiry', compute='_compute_expiry_status')
     stock_value = fields.Monetary(
         'Stock Value', compute='_compute_stock_value', currency_field='currency_id',
-        help='What this position is worth at cost — the number that makes an expiry '
+        help='What this position is worth at cost - the number that makes an expiry '
              'report a financial conversation rather than a list.')
     currency_id = fields.Many2one('res.currency', related='company_id.currency_id',
                                   readonly=True)
@@ -83,7 +83,7 @@ class StockQuant(models.Model):
         """Make the status filterable without storing a field that goes stale hourly.
 
         Odoo 19 normalises `=` into `in` with a collection, so the value arriving here
-        may be a single string OR a set of them — reading it as a plain string raises
+        may be a single string OR a set of them - reading it as a plain string raises
         "unhashable type: OrderedSet" the first time anyone clicks the filter.
         """
         now = fields.Datetime.now()

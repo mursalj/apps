@@ -6,7 +6,7 @@ consumption and revenue series, the meter mix, and the readings needing attentio
 
 Revenue is aggregated with _read_group over account.move. The previous implementation
 searched every billed reading and mapped to its invoice, which loaded the whole reading
-table into memory to reach a handful of invoices — and, worse, dereferenced an invoice
+table into memory to reach a handful of invoices - and, worse, dereferenced an invoice
 recorded in docs/PROD_PENDING_CHANGES.md section 9.
 """
 

@@ -13,7 +13,7 @@ None of it needs new tables. Odoo already holds the stock (stock.quant), the mov
 pharmacy's reading of them. These are queries with a menu in front of them, plus one
 internal digest so nobody has to remember to look.
 
-The digest is INTERNAL — it notifies pharmacy managers inside Odoo. Nothing here emails a
+The digest is INTERNAL - it notifies pharmacy managers inside Odoo. Nothing here emails a
 customer: on this platform customer-contacting crons ship disabled and are switched on
 deliberately (docs/PROD_PENDING_CHANGES.md), and a stock alert is nobody's business but
 the pharmacy's.
@@ -67,7 +67,7 @@ class PharmacyStockIntelligence(models.AbstractModel):
 
         The reorder point is the pharmacy's own judgement of "low" and already exists in
         Odoo, so it is used rather than a threshold invented here. Products with no
-        reorder rule cannot be low — there is nothing to be low against — which is worth
+        reorder rule cannot be low - there is nothing to be low against - which is worth
         knowing in itself.
         """
         positions = self._stock_positions()
@@ -85,7 +85,7 @@ class PharmacyStockIntelligence(models.AbstractModel):
         """Medicines holding stock that nothing has taken out in `days`.
 
         Measured on outgoing stock moves rather than on sales lines, so a transfer to
-        another branch counts as movement — the stock did leave, which is the question.
+        another branch counts as movement - the stock did leave, which is the question.
         """
         days = days or self._dead_stock_days()
         cutoff = fields.Datetime.subtract(fields.Datetime.now(), days=days)

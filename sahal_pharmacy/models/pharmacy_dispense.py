@@ -252,7 +252,7 @@ class PharmacyDispense(models.Model):
             if dispense.state == 'done':
                 raise UserError(_(
                     "%s is already dispensed. Cancel the sale order %s and return the "
-                    "stock instead — a dispensing record is part of the audit trail "
+                    "stock instead - a dispensing record is part of the audit trail "
                     "and is never deleted.",
                     dispense.name, dispense.sale_order_id.name or ''))
             dispense.state = 'cancelled'
@@ -306,4 +306,4 @@ class PharmacyDispenseLine(models.Model):
                 rx_line.dosage, rx_line.frequency, rx_line.instructions]))
             if detail:
                 parts.append(detail)
-        return " — ".join(parts)
+        return " - ".join(parts)

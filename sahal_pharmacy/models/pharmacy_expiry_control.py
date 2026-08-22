@@ -10,7 +10,7 @@ Two things live here:
 * **The block.** Any expired batch reaching a pos.order or a sale order is refused,
   server-side, wherever it came from. Configurable (`block_expired_sales`) because a few
   jurisdictions permit exceptional handling, and overridable ONLY by a pharmacist, with
-  the override written to the record — the PRD's "override should require authorized
+  the override written to the record - the PRD's "override should require authorized
   permission" (16).
 
 * **FEFO selection.** Odoo's FEFO removal strategy already picks the right batch when
@@ -28,7 +28,7 @@ _logger = logging.getLogger(__name__)
 
 
 class PharmacyExpiryControl(models.AbstractModel):
-    """Behaviour, not data — the same rules used by dispensing, sales and the till."""
+    """Behaviour, not data - the same rules used by dispensing, sales and the till."""
     _name = 'pharmacy.expiry.control'
     _description = 'Pharmacy Expiry Enforcement'
 
@@ -44,7 +44,7 @@ class PharmacyExpiryControl(models.AbstractModel):
 
         First Expired First Out is the whole point of batch rotation in a pharmacy: the
         oldest usable stock must leave first or it becomes a write-off. Lots with no
-        expiry date sort last — they cannot be "about to expire", so they should not
+        expiry date sort last - they cannot be "about to expire", so they should not
         jump the queue ahead of stock that can.
         """
         domain = [
@@ -106,7 +106,7 @@ class PharmacyExpiryControl(models.AbstractModel):
             "instead. A pharmacist can override this if the pharmacy's policy allows "
             "it, and the override is recorded.",
             doc=document_name,
-            problems='\n'.join('• %s' % p for p in problems)))
+            problems='\n'.join('* %s' % p for p in problems)))
 
 
 class PosOrder(models.Model):
@@ -125,8 +125,8 @@ class PosOrder(models.Model):
             medicine_lines = order.lines.filtered(lambda l: l.product_id.is_medicine)
             if not medicine_lines:
                 continue
-            # pos.pack.operation.lot carries only the lot NAME — the till captures what
-            # the cashier scanned, not a link to stock.lot — so the batch has to be
+            # pos.pack.operation.lot carries only the lot NAME - the till captures what
+            # the cashier scanned, not a link to stock.lot - so the batch has to be
             # resolved per product before its expiry can be read.
             pairs = []
             for line in medicine_lines:
@@ -180,7 +180,7 @@ class PharmacyDispenseLine(models.Model):
             if lots:
                 first = lots[0]
                 line.fefo_suggestion = _(
-                    "%(lot)s — expires %(expiry)s (%(qty)s on hand)",
+                    "%(lot)s - expires %(expiry)s (%(qty)s on hand)",
                     lot=first['lot'], expiry=first['expiry'] or _('no expiry'),
                     qty=first['quantity'])
 
@@ -188,7 +188,7 @@ class PharmacyDispenseLine(models.Model):
     def _onchange_product_fefo(self):
         """Pre-select the batch that should leave first, without forcing it.
 
-        The pharmacist can still choose another — a patient may be returning for the
+        The pharmacist can still choose another - a patient may be returning for the
         same batch they started, and stock at the front of the shelf is not always the
         stock the system thinks. But the default is the correct one.
         """

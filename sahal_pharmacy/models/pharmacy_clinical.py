@@ -15,7 +15,7 @@ could not perform because it had no idea what a product CONTAINS:
   is already taking.
 
 * **Substitution.** Dispensing a different product from the one prescribed is a clinical
-  decision that has to be recorded — who authorised it, why, and what was swapped.
+  decision that has to be recorded - who authorised it, why, and what was swapped.
 
 DELIBERATE LIMIT, stated plainly because it matters: this is a warning system driven by
 data the pharmacy enters itself. It is not a clinical database and it does not replace a
@@ -128,7 +128,7 @@ class PharmacySubstitution(models.Model):
                                      readonly=True)
     is_equivalent = fields.Boolean(
         'Same Generic', compute='_compute_is_equivalent', store=True,
-        help='True when both products share a generic — the only case the system can '
+        help='True when both products share a generic - the only case the system can '
              'call clinically equivalent on its own.')
     company_id = fields.Many2one('res.company', default=lambda s: s.env.company)
 
@@ -160,8 +160,8 @@ class PharmacySubstitution(models.Model):
                 orig=record.original_product_id.display_name,
                 sub=record.substitute_product_id.display_name,
                 reason=dict(record._fields['reason'].selection)[record.reason],
-                equiv=_(' — same generic') if record.is_equivalent
-                else _(' — NOT the same generic')))
+                equiv=_(' - same generic') if record.is_equivalent
+                else _(' - NOT the same generic')))
         return records
 
 

@@ -72,7 +72,7 @@ check("an unrelated medicine raises nothing",
 # ---------------------------------------------------------------- allergy, free text
 noted = env['res.partner'].create({
     'name': 'PH6 Patient Noted', 'is_patient': True,
-    'allergies': 'Penicillin — rash as a child'})
+    'allergies': 'Penicillin - rash as a child'})
 noted_findings = noted.pharmacy_screen_products(amoxil)
 check("a free-text allergy still matches through the ingredient alias",
       any(f['kind'] == 'allergy' for f in noted_findings), noted_findings)

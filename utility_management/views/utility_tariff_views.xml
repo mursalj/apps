@@ -57,7 +57,7 @@
                             <div class="alert alert-info" role="alert">
                                 Blocks are marginal: each slice of consumption is charged
                                 at its own rate. Leave the LAST block's "Up To" empty to
-                                mean "and above" — anywhere else it must increase.
+                                mean "and above" - anywhere else it must increase.
                             </div>
                             <field name="block_ids">
                                 <list editable="bottom">

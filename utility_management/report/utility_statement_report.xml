@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- SRS 36: one ledger per service account — date, transaction, debit, credit,
-         running balance — so a customer with two connections can see which one owes. -->
+    <!-- SRS 36: one ledger per service account - date, transaction, debit, credit,
+         running balance - so a customer with two connections can see which one owes. -->
     <template id="report_utility_statement_document">
         <t t-call="web.external_layout">
             <div class="page">
                 <div class="row mb-3">
                     <div class="col-7">
                         <h3 class="mb-0">Account Statement</h3>
-                        <div><span t-field="doc.name"/> — <span t-field="doc.utility_type"/></div>
+                        <div><span t-field="doc.name"/> - <span t-field="doc.utility_type"/></div>
                     </div>
                     <div class="col-5 text-end">
                         <div><strong>Customer:</strong> <span t-field="doc.partner_id.name"/></div>
@@ -37,7 +37,7 @@
                             <td><span t-esc="row['label']"/></td>
                             <td>
                                 <t t-if="row['period_start']">
-                                    <span t-esc="row['period_start']"/> — <span t-esc="row['period_end']"/>
+                                    <span t-esc="row['period_start']"/> - <span t-esc="row['period_end']"/>
                                 </t>
                             </td>
                             <td class="text-end">

@@ -27,7 +27,7 @@
                 <div class="o_ud_card">
                     <div class="o_ud_label">Meters</div>
                     <div class="o_ud_value" t-esc="num(state.data.kpis.meters_total)"/>
-                    <div class="o_ud_hint"><t t-esc="state.data.kpis.meters_active"/> active · <t t-esc="state.data.kpis.meters_maintenance"/> in maintenance</div>
+                    <div class="o_ud_hint"><t t-esc="state.data.kpis.meters_active"/> active - <t t-esc="state.data.kpis.meters_maintenance"/> in maintenance</div>
                 </div>
                 <div class="o_ud_card">
                     <div class="o_ud_label">Customers Served</div>
@@ -42,7 +42,7 @@
                 <div class="o_ud_card o_ud_click" t-on-click="() => this.openHighUsage()">
                     <div class="o_ud_label">Needs Attention</div>
                     <div class="o_ud_value" t-att-class="state.data.kpis.high_usage ? 'o_ud_neg' : ''" t-esc="num(state.data.kpis.high_usage)"/>
-                    <div class="o_ud_hint">high-usage flags · <t t-esc="state.data.kpis.unbilled"/> unbilled readings</div>
+                    <div class="o_ud_hint">high-usage flags - <t t-esc="state.data.kpis.unbilled"/> unbilled readings</div>
                 </div>
             </div>
 
@@ -67,7 +67,7 @@
                         <tr t-foreach="state.data.attention" t-as="row" t-key="row.id" class="o_ud_click" t-on-click="() => this.openReading(row.id)">
                             <td class="fw-bold" t-esc="row.name"/>
                             <td t-esc="row.meter"/>
-                            <td t-esc="row.customer or '—'"/>
+                            <td t-esc="row.customer or '-'"/>
                             <td class="text-end o_ud_neg" t-esc="num(row.consumption)"/>
                             <td class="text-end" t-esc="num(row.average)"/>
                         </tr>

@@ -2,7 +2,7 @@
 <odoo>
 
     <!-- SRS 24: consumption and billing analysis. Graph and pivot on the two models that
-         hold the numbers — readings for consumption, run lines for what was billed. -->
+         hold the numbers - readings for consumption, run lines for what was billed. -->
 
     <record id="view_utility_reading_graph" model="ir.ui.view">
         <field name="name">utility.meter.reading.graph</field>

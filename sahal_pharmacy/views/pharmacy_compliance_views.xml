@@ -17,7 +17,7 @@
                         <strong>Pharmacy licence expires soon.</strong>
                     </div>
                     <div class="oe_title">
-                        <h1><field name="name" placeholder="e.g. Sahal Pharmacy — Main Branch"/></h1>
+                        <h1><field name="name" placeholder="e.g. Sahal Pharmacy - Main Branch"/></h1>
                     </div>
                     <group>
                         <group string="Identity">
@@ -54,7 +54,7 @@
                         </group>
                         <group string="Hours">
                             <field name="opening_hours" nolabel="1"
-                                   placeholder="Mon–Sat 08:00–20:00&#10;Sun 10:00–14:00"/>
+                                   placeholder="Mon-Sat 08:00-20:00&#10;Sun 10:00-14:00"/>
                         </group>
                     </group>
                     <field name="document_ids" readonly="1">
@@ -100,7 +100,7 @@
         <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">Describe this pharmacy</p>
-            <p>Licence, responsible pharmacist and branch details — what an inspector
+            <p>Licence, responsible pharmacist and branch details - what an inspector
                asks for first, and what a chain needs per branch.</p>
         </field>
     </record>
@@ -201,7 +201,7 @@
             <form string="Regulatory Document">
                 <sheet>
                     <div class="oe_title">
-                        <h1><field name="name" placeholder="e.g. Import permit — Amoxicillin"/></h1>
+                        <h1><field name="name" placeholder="e.g. Import permit - Amoxicillin"/></h1>
                     </div>
                     <group>
                         <group>
@@ -239,7 +239,7 @@
         <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">File a document</p>
-            <p>Registrations, certificates and permits with their expiry dates — so the
+            <p>Registrations, certificates and permits with their expiry dates - so the
                pharmacy hears about a lapse before the inspector does.</p>
         </field>
     </record>

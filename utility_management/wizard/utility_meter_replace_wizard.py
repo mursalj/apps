@@ -8,7 +8,7 @@ reading, the new meter, its INITIAL reading, the date, reason, technician and ev
 be captured together.
 
 This wizard does all of it in one transaction: closes the old installation, opens the new
-one, and (by default) writes the two readings that keep consumption continuous — a
+one, and (by default) writes the two readings that keep consumption continuous - a
 replacement reading closing the old meter, and an opening reading starting the new one.
 """
 
@@ -58,7 +58,7 @@ class UtilityMeterReplaceWizard(models.TransientModel):
             if wiz.final_reading < wiz.last_reading:
                 raise ValidationError(_(
                     "The final reading (%(f)s) is below the last recorded reading (%(l)s) "
-                    "on meter %(m)s. A dial does not run backwards — check the figure, or "
+                    "on meter %(m)s. A dial does not run backwards - check the figure, or "
                     "record the rollover on the meter first.",
                     f=wiz.final_reading, l=wiz.last_reading, m=wiz.old_meter_id.name))
 
@@ -144,7 +144,7 @@ class UtilityMeterReplaceWizard(models.TransientModel):
 
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Meter History — %s', account.name),
+            'name': _('Meter History - %s', account.name),
             'res_model': 'utility.meter.installation',
             'view_mode': 'list,form',
             'domain': [('account_id', '=', account.id)],

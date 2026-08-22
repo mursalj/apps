@@ -107,7 +107,7 @@ class SaleOrder(models.Model):
         """True when this order is bulk supply to an approved, licensed business.
 
         Deliberately narrow: being marked wholesale is not enough. The customer must be
-        APPROVED to buy medicines and hold a licence that has not expired — exactly the
+        APPROVED to buy medicines and hold a licence that has not expired - exactly the
         conditions the wholesale check enforces. An unapproved or lapsed account falls
         back to the retail rule and is stopped, rather than slipping through by being
         labelled wholesale.
@@ -129,7 +129,7 @@ class SaleOrder(models.Model):
                 continue
             # WHOLESALE is a different legal transaction (PRD 111). A wholesaler
             # supplying a licensed pharmacy or hospital is not dispensing to a patient,
-            # and there is no prescription to attach — the buyer's trading licence is
+            # and there is no prescription to attach - the buyer's trading licence is
             # what authorises the sale, and that is checked separately by the wholesale
             # rules in pharmacy_wholesale.py. Demanding a prescription here made bulk
             # distribution impossible: the retail guard blocked every wholesale order
@@ -159,8 +159,8 @@ class PosOrder(models.Model):
         medicine may be sold is a legal question about the PRODUCT; if unticking a
         checkbox on the till switched the rule off, the checkbox would be the bypass.
 
-        It is gated on the order CONTENTS instead, so a restaurant or hardware till —
-        which never sells a medicine — exits on the first line below and pays nothing
+        It is gated on the order CONTENTS instead, so a restaurant or hardware till -
+        which never sells a medicine - exits on the first line below and pays nothing
         for a module its industry does not use.
         """
         orders = super().create(vals_list)

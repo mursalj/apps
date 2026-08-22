@@ -104,7 +104,7 @@ Install and usage instructions: see README.md in this module's directory.
     ],
     'assets': {
         # POS bundle: the till patch ONLY. This bundle is downloaded by every point of
-        # sale on the platform — restaurants, hotels, hardware shops — so nothing else
+        # sale on the platform - restaurants, hotels, hardware shops - so nothing else
         # belongs in it.
         'point_of_sale._assets_pos': [
             'sahal_pharmacy/static/src/js/pos_pharmacy.js',
@@ -129,7 +129,7 @@ Install and usage instructions: see README.md in this module's directory.
         # product_template_views.xml defines product_template_form_pharmacy, which
         # pharmacy_wholesale_views.xml and res_partner_views.xml extend by xmlid. It has
         # to load FIRST. On an already-installed database the id is in ir_model_data
-        # from a previous version so any order appears to work — the failure only shows
+        # from a previous version so any order appears to work - the failure only shows
         # on a FRESH install, which is what every buyer and every disaster recovery does.
         'views/product_template_views.xml',
         'views/res_partner_views.xml',

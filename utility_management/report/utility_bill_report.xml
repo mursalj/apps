@@ -20,7 +20,7 @@
                         </div>
                         <div t-if="doc.utility_period_start">
                             <strong>Service period:</strong>
-                            <span t-field="doc.utility_period_start"/> —
+                            <span t-field="doc.utility_period_start"/> -
                             <span t-field="doc.utility_period_end"/>
                         </div>
                         <div>

@@ -70,7 +70,7 @@
                     <div class="alert alert-warning" role="alert"
                          invisible="exception_state in ('normal', 'estimated')">
                         <i class="fa fa-exclamation-triangle me-1" title="Exception"/>
-                        <strong>Needs review —
+                        <strong>Needs review -
                         <field name="exception_codes" nolabel="1" readonly="1" class="oe_inline"/></strong>
                         <field name="exception_reason" nolabel="1" readonly="1"/>
                     </div>

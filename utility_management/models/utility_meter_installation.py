@@ -3,7 +3,7 @@
 
 The SRS is explicit: when a meter is replaced the system must preserve the old meter, its
 final reading, the new meter, its initial reading, the date, the reason, the technician and
-the supporting photos. A status field on the meter cannot do that — it holds one value and
+the supporting photos. A status field on the meter cannot do that - it holds one value and
 forgets the last one.
 
 So the link between a meter and a service account is a RECORD with a start and an end.
@@ -75,7 +75,7 @@ class UtilityMeterInstallation(models.Model):
 
     @api.constrains('meter_id', 'date_removed')
     def _check_single_open_installation(self):
-        """A meter can only be on one account at a time — the whole point of the history."""
+        """A meter can only be on one account at a time - the whole point of the history."""
         for rec in self.filtered(lambda r: not r.date_removed):
             other = self.search_count([
                 ('meter_id', '=', rec.meter_id.id),

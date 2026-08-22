@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Service account — the spine of the meter-to-cash cycle (SRS 5.2, 6).
+"""Service account - the spine of the meter-to-cash cycle (SRS 5.2, 6).
 
 A customer is a res.partner. What the utility actually bills is a SERVICE ACCOUNT: one
 connection, at one address, for one utility, with its own account number, tariff, billing
@@ -8,7 +8,7 @@ cycle, deposit and balance. "ABC Hotel" is one partner with three service accoun
 
 Everything downstream keys on this record rather than on the partner:
 readings roll up to it, the billing run produces one bill per account, the statement is
-per account, and connection status (SRS 6) lives here — a meter has a physical state
+per account, and connection status (SRS 6) lives here - a meter has a physical state
 (working / faulty), an account has a commercial one (active / suspended / disconnected).
 """
 
@@ -179,7 +179,7 @@ class UtilityServiceAccount(models.Model):
         """Make the computed balance filterable ("accounts owing money").
 
         Aggregates the residual per account once and returns the matching ids, rather
-        than making the field stored — a stored balance would need invalidating on every
+        than making the field stored - a stored balance would need invalidating on every
         invoice, payment and reconciliation, and would still drift.
         """
         groups = self.env['account.move'].sudo()._read_group(
@@ -194,7 +194,7 @@ class UtilityServiceAccount(models.Model):
         ]
         if operator in ('=', '<=', '<') or (operator == '!=' and value):
             # Accounts with no posted invoice have a balance of zero, which these
-            # operators can match — they are absent from the aggregate entirely.
+            # operators can match - they are absent from the aggregate entirely.
             zero_matches = OPERATORS[operator](0.0, value)
             if zero_matches:
                 billed = set(balances)
@@ -225,7 +225,7 @@ class UtilityServiceAccount(models.Model):
 
     @api.model
     def _next_account_number(self, utility_type):
-        """ELE/2026/000042 — the utility is visible in the number itself."""
+        """ELE/2026/000042 - the utility is visible in the number itself."""
         code = UTILITY_CODE.get(utility_type, 'UTL')
         number = self._next_reference('utility.service.account') or '0001'
         return '%s/%s' % (code, number)
@@ -265,7 +265,7 @@ class UtilityServiceAccount(models.Model):
         elif self.estimation_method == 'seasonal':
             estimate = self._seasonal_estimate(meter, on_date)
             if not estimate and history:
-                # No reading from this month last year — fall back to a recent average
+                # No reading from this month last year - fall back to a recent average
                 # rather than billing zero for a genuinely consuming meter.
                 sample = history[:3]
                 estimate = sum(sample.mapped('consumption')) / len(sample)
@@ -275,7 +275,7 @@ class UtilityServiceAccount(models.Model):
         return max(estimate, self.minimum_consumption or 0.0)
 
     def _seasonal_estimate(self, meter, on_date=None):
-        """Consumption in the same calendar month a year ago — the seasonal method."""
+        """Consumption in the same calendar month a year ago - the seasonal method."""
         self.ensure_one()
         on_date = on_date or fields.Date.today()
         target = on_date - relativedelta(years=1)
@@ -294,7 +294,7 @@ class UtilityServiceAccount(models.Model):
         """Meters on this account with no usable reading inside the period (SRS 9).
 
         This is the "missing reading" check: it is a question about a PERIOD, so it cannot
-        live on the reading model — the whole point is that no reading exists.
+        live on the reading model - the whole point is that no reading exists.
         """
         self.ensure_one()
         Reading = self.env['utility.meter.reading'].sudo()
@@ -319,7 +319,7 @@ class UtilityServiceAccount(models.Model):
         for account in self:
             if not account.tariff_id:
                 raise UserError(_(
-                    "Account %s has no tariff, so it cannot be activated — a billing run "
+                    "Account %s has no tariff, so it cannot be activated - a billing run "
                     "would have nothing to charge.", account.name))
             account.write({
                 'state': 'active',
@@ -377,7 +377,7 @@ class UtilityServiceAccount(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Meters — %s', self.name),
+            'name': _('Meters - %s', self.name),
             'res_model': 'utility.meter',
             'view_mode': 'list,form',
             'domain': [('account_id', '=', self.id)],
@@ -389,7 +389,7 @@ class UtilityServiceAccount(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Readings — %s', self.name),
+            'name': _('Readings - %s', self.name),
             'res_model': 'utility.meter.reading',
             'view_mode': 'list,form',
             'domain': [('account_id', '=', self.id)],
@@ -399,7 +399,7 @@ class UtilityServiceAccount(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Invoices — %s', self.name),
+            'name': _('Invoices - %s', self.name),
             'res_model': 'account.move',
             'view_mode': 'list,form',
             'domain': [('utility_account_id', '=', self.id),
@@ -410,7 +410,7 @@ class UtilityServiceAccount(models.Model):
 
     def _display_name_parts(self):
         self.ensure_one()
-        return '%s — %s' % (self.name, self.partner_id.display_name or '')
+        return '%s - %s' % (self.name, self.partner_id.display_name or '')
 
     @api.depends('name', 'partner_id')
     def _compute_display_name(self):

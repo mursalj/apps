@@ -52,7 +52,7 @@ class UtilityBillingCycle(models.Model):
             # February entirely in a common year.
             if not 1 <= cycle.anchor_day <= 28:
                 raise ValidationError(_(
-                    "Period start day must be between 1 and 28 — a later day does not "
+                    "Period start day must be between 1 and 28 - a later day does not "
                     "exist in every month."))
 
     @api.constrains('due_days')

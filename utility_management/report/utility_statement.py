@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Customer account statement (SRS 36).
 
-The SRS asks for a running ledger per customer — date, transaction, debit, credit,
-balance — downloadable as a PDF. Odoo's partner ledger is close, but it is per PARTNER and
+The SRS asks for a running ledger per customer - date, transaction, debit, credit,
+balance - downloadable as a PDF. Odoo's partner ledger is close, but it is per PARTNER and
 per accounting account: a customer with an electricity account and a water account sees
 one merged column of numbers and cannot tell which connection owes what.
 

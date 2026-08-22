@@ -91,7 +91,7 @@ except Exception as e:
     check("selling an expired batch is refused", 'expired medicine' in str(e),
           str(e)[:70])
 
-# override: allowed, but only deliberately — and the default key must be honoured
+# override: allowed, but only deliberately - and the default key must be honoured
 # without every caller having to name it.
 Control.with_context(pharmacy_expiry_override=True)._assert_not_expired(
     [(medicine, lots['expired'])], 'PH8 Probe')

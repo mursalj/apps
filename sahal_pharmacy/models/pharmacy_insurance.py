@@ -137,7 +137,7 @@ class PharmacyInsuranceClaim(models.Model):
         for claim in self:
             if not claim.rejection_reason:
                 raise UserError(_(
-                    "Record why the insurer rejected %s — the patient will ask, and so "
+                    "Record why the insurer rejected %s - the patient will ask, and so "
                     "will the next claim.", claim.name))
             claim.write({'state': 'rejected',
                          'response_on': fields.Date.context_today(claim)})
@@ -167,7 +167,7 @@ class PharmacyInsuranceClaim(models.Model):
             'company_id': self.company_id.id,
             'invoice_line_ids': [(0, 0, {
                 'product_id': product.id,
-                'name': _('%(claim)s — %(patient)s (policy %(policy)s)',
+                'name': _('%(claim)s - %(patient)s (policy %(policy)s)',
                           claim=self.name, patient=self.patient_id.display_name,
                           policy=self.policy_no or '-'),
                 'quantity': 1.0,
@@ -253,7 +253,7 @@ class PharmacyDispense(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Claims — %s', self.name),
+            'name': _('Claims - %s', self.name),
             'res_model': 'pharmacy.insurance.claim',
             'view_mode': 'list,form',
             'domain': [('dispense_id', '=', self.id)],
