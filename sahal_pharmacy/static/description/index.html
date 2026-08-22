@@ -1,0 +1,148 @@
+<style>
+.bt-wrap{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  color:#2b2b3a;line-height:1.6;max-width:1000px;margin:0 auto;padding:0 16px}
+.bt-wrap *{box-sizing:border-box}
+.bt-hero{background:linear-gradient(135deg,#0b7a63 0%,#12a884 100%);color:#fff;
+  border-radius:14px;padding:46px 40px;margin:0 0 34px}
+.bt-hero h1{margin:0 0 10px;font-size:40px;line-height:1.15;font-weight:700;color:#fff}
+.bt-hero p{margin:0;font-size:19px;opacity:.95;max-width:720px}
+.bt-badges{margin-top:22px}
+.bt-badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
+  border-radius:20px;padding:5px 14px;font-size:13px;margin:0 8px 8px 0}
+.bt-wrap h2{font-size:27px;margin:40px 0 6px;color:#1b1b2b;font-weight:700}
+.bt-wrap h2 + .bt-sub{margin:0 0 20px;color:#6a6a80;font-size:16px}
+.bt-wrap h3{font-size:18px;margin:24px 0 8px;color:#1b1b2b}
+.bt-grid{display:flex;flex-wrap:wrap;gap:16px;margin:20px 0}
+.bt-card{flex:1 1 300px;background:#fff;border:1px solid #e6e6ef;border-left:4px solid #0b7a63;
+  border-radius:10px;padding:20px 22px}
+.bt-card h4{margin:0 0 8px;font-size:17px;color:#1b1b2b}
+.bt-card p{margin:0;font-size:15px;color:#55556a}
+.bt-note{background:#f6f6fb;border:1px solid #e6e6ef;border-radius:10px;padding:18px 22px;margin:22px 0}
+.bt-note strong{color:#1b1b2b}
+.bt-warn{background:#fff8ec;border:1px solid #f0d9ae;border-left:4px solid #e0a33e;
+  border-radius:10px;padding:18px 22px;margin:22px 0}
+.bt-wrap table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px}
+.bt-wrap th{text-align:left;background:#f6f6fb;padding:11px 14px;border-bottom:2px solid #e6e6ef;
+  font-weight:600;color:#1b1b2b}
+.bt-wrap td{padding:11px 14px;border-bottom:1px solid #eeeef5;vertical-align:top}
+.bt-wrap ul{margin:10px 0 10px 22px;padding:0}
+.bt-wrap li{margin:6px 0}
+.bt-shot{margin:26px 0;border:1px solid #e6e6ef;border-radius:10px;overflow:hidden}
+.bt-shot img{display:block;width:100%;height:auto}
+.bt-shot figcaption{background:#f6f6fb;padding:11px 16px;font-size:14px;color:#55556a;margin:0}
+.bt-foot{border-top:1px solid #e6e6ef;margin-top:44px;padding-top:22px;color:#6a6a80;font-size:15px}
+.bt-tech{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f0f0f7;
+  border-radius:5px;padding:2px 7px;font-size:14px}
+</style>
+
+<div class="bt-wrap">
+
+<div class="bt-hero">
+  <h1>Pharmacy Management</h1>
+  <p>Run a retail counter, a wholesale operation, or both — with the controls a pharmacy
+     is actually held to: prescription rules, batch and expiry tracking, and a controlled
+     drugs register that writes itself.</p>
+  <div class="bt-badges">
+    <span class="bt-badge">Odoo 19.0</span>
+    <span class="bt-badge">Retail &amp; wholesale</span>
+    <span class="bt-badge">Controlled drugs register</span>
+    <span class="bt-badge">Batch &amp; expiry (FEFO)</span>
+    <span class="bt-badge">241 automated tests</span>
+  </div>
+</div>
+
+<h2>Built on Odoo, not beside it</h2>
+<p class="bt-sub">This is the difference that shows up six months in.</p>
+<p>Medicines are <strong>products</strong>. Patients, prescribers and suppliers are
+   <strong>contacts</strong>. Batches are <strong>stock lots</strong>. Dispensing creates a
+   real sale order and moves real stock; billing posts real journal entries.</p>
+<p>So Inventory, Purchase, Sales, Point of Sale and Accounting all work on your pharmacy
+   data directly — your stock valuation, your tax return and your reorder rules are the
+   ones Odoo already gives you. Nothing here is a parallel set of numbers that has to be
+   reconciled with the real ones.</p>
+
+<figure class="bt-shot"><img src="screenshot_dashboard.png" alt="The pharmacy dashboard: money, stock health, expiry and the day's dispensing at a glance"/><figcaption>The pharmacy dashboard: money, stock health, expiry and the day's dispensing at a glance</figcaption></figure>
+
+<h2>What it does</h2>
+<div class="bt-grid"><div class="bt-card"><h4>Medicine catalogue</h4><p>Prescription, OTC, supplement, medical device and cosmetic. Generic-to-brand relations, active ingredients, dosage forms and routes, structured strength, ATC and therapeutic class, GTIN, cold-chain range, and flags for antibiotic, high-alert, hazardous, paediatric and veterinary.</p></div><div class="bt-card"><h4>Prescriptions &amp; dispensing</h4><p>Pharmacist verification, validity and refills, partial dispensing, and dispensing that creates a real sale order and moves real stock with the batch captured.</p></div><div class="bt-card"><h4>Controlled drugs</h4><p>A restricted register where every movement is logged automatically, handover is limited to a pharmacist, and disposal is witnessed.</p></div><div class="bt-card"><h4>Suppliers</h4><p>Pharmaceutical licence with expiry and issuing authority, approved-supplier status, approval per product, and purchase orders that warn or block on an unapproved or unlicensed vendor.</p></div><div class="bt-card"><h4>Customer returns</h4><p>The batch, the condition it came back in, and a pharmacist's decision to restock or destroy — kept separate from whether the customer is refunded.</p></div><div class="bt-card"><h4>Insurance claims</h4><p>The copay split, the claim's life with the insurer, and the insurer invoiced only once they have agreed.</p></div></div>
+
+<h2>Dispensing that follows the rules</h2>
+<p>A prescription is written, checked, verified by a pharmacist, then dispensed — and each
+   of those steps is enforced, not just recorded.</p>
+<ul>
+  <li><strong>Clinical safety before verification.</strong> Allergies are matched on the
+      <em>active ingredient</em>, so a brand nobody typed is still caught, and free-text
+      allergies are matched through ingredient aliases. Interactions are checked across
+      the whole script.</li>
+  <li><strong>High and critical findings must be signed off</strong> by a named pharmacist
+      before the prescription can be verified or dispensed.</li>
+  <li><strong>Prescription-only medicines cannot be sold without one.</strong> Enforced at
+      the till and on the server, so it is not a checkbox somebody can untick.</li>
+  <li><strong>Partial dispensing and refills</strong> — the remaining quantity stays on
+      the script.</li>
+  <li><strong>Substitutions are recorded</strong>: what was swapped, why, by whom, and
+      whether it was genuinely the same generic.</li>
+</ul>
+
+<figure class="bt-shot"><img src="screenshot_prescription.png" alt="A prescription with clinical screening and pharmacist verification"/><figcaption>A prescription with clinical screening and pharmacist verification</figcaption></figure>
+
+<h2>Stock that knows what it is holding</h2>
+<div class="bt-grid"><div class="bt-card"><h4>Batch and expiry</h4><p>Every medicine batch-tracked with an expiry date, because "how many boxes" is never the whole question.</p></div><div class="bt-card"><h4>FEFO</h4><p>The earliest-expiring usable batch is offered first, on the dispensing screen and at the till.</p></div><div class="bt-card"><h4>Expiry as money</h4><p>Expired and near-expiry stock reported with the value attached, so you can see what it is about to cost you.</p></div><div class="bt-card"><h4>Stock intelligence</h4><p>Out of stock, low stock, dead stock and expiry loss, with a daily internal digest to pharmacy managers. Nothing here contacts a customer.</p></div></div>
+
+<div class="bt-warn">
+  <strong>Expired stock is refused, not flagged.</strong> At the counter and at the till.
+  Where local policy allows an override, it is recorded against the pharmacist who gave
+  it — which is the difference between a control and a warning nobody reads.
+</div>
+
+<h2>Wholesale, when you supply other pharmacies</h2>
+<ul>
+  <li>Trading licence and expiry on the customer, with approval to buy medicines at all.</li>
+  <li><strong>Credit control</strong> — Odoo credit limits plus a credit hold only a
+      manager can release.</li>
+  <li><strong>Order quantities</strong> — minimum, maximum and whole-case multiples,
+      enforced on the order.</li>
+  <li>Licence, credit and quantity checked on confirmation, with a recorded manager
+      override where one is permitted.</li>
+  <li>Licensed wholesale supply is correctly <strong>exempt</strong> from the retail
+      prescription rule — supplying a licensed pharmacy is not dispensing to a patient.</li>
+</ul>
+
+<h2>Who does what</h2>
+<p class="bt-sub">Five roles that build on each other, so people see their own job.</p>
+<table><tr><th>Role</th><th>Can do</th></tr><tr><td>Cashier</td><td>Sell over-the-counter medicines and take payment. Cannot verify prescriptions or handle controlled drugs.</td></tr><tr><td>Technician</td><td>Everything above, plus prepare and dispense non-controlled prescriptions.</td></tr><tr><td>Pharmacist</td><td>Verify prescriptions, sign off clinical warnings, dispense controlled drugs and sign the register.</td></tr><tr><td>Manager</td><td>Full access — set up medicines, release credit holds, authorise overrides, run reports.</td></tr><tr><td>Auditor</td><td>Read-only across the register, dispensing history and the override log, for compliance checks.</td></tr></table>
+
+<h2>What you install</h2>
+<p>One module. No suite, no dependency chain of your own to manage.</p>
+<table><tr><th>Technical name</th><th>What it is</th></tr><tr><td><span class="bt-tech">sahal_pharmacy</span></td><td>Pharmacy Management — the complete app. Everything described on this page is in this one module.</td></tr></table>
+
+<h2>Requirements</h2>
+<ul>
+  <li>Odoo <strong>19.0</strong>, Community or Enterprise.</li>
+  <li>Standard apps: Inventory, Purchase, Sales, Accounting/Invoicing, Point of Sale and
+      Barcode. <span class="bt-tech">product_expiry</span> is installed automatically —
+      it is what gives lots an expiry date and enables FEFO rotation.</li>
+</ul>
+<div class="bt-note">
+  <strong>Point of Sale note.</strong> The till integration is switched on per point of
+  sale with a single setting. A till that is not marked as a pharmacy loads no pharmacy
+  data and behaves exactly as it did before — which matters if you also run a restaurant,
+  a hotel shop or a hardware counter on the same database.
+</div>
+
+<h2>Tested, and you can check</h2>
+<p><strong>241 automated checks</strong> ship inside the module under
+   <span class="bt-tech">tests/</span> — twelve suites covering the product master,
+   suppliers, wholesale, reporting, till isolation, clinical safety, returns, expiry and
+   FEFO, compliance, insurance, stock intelligence and the dashboard. Every suite rolls
+   its transaction back, so you can run them against your own database:</p>
+<p><span class="bt-tech">odoo shell -d yourdb --no-http &lt; tests/ph1_product_master_check.py</span></p>
+<p>The module also ships a full <span class="bt-tech">README.md</span> covering install,
+   roles, first-time setup and everyday use.</p>
+
+<div class="bt-foot">
+  <p><strong>B&amp;T Solutions</strong> &nbsp;·&nbsp; support@bandtsolutions.com
+     &nbsp;·&nbsp; bandtsolutions.com</p>
+  <p>Licence OPL-1. Version 19.0.3.0.0.</p>
+</div>
+</div>

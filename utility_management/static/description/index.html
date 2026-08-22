@@ -1,0 +1,162 @@
+<style>
+.bt-wrap{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  color:#2b2b3a;line-height:1.6;max-width:1000px;margin:0 auto;padding:0 16px}
+.bt-wrap *{box-sizing:border-box}
+.bt-hero{background:linear-gradient(135deg,#1b4f8a 0%,#2f7fc4 100%);color:#fff;
+  border-radius:14px;padding:46px 40px;margin:0 0 34px}
+.bt-hero h1{margin:0 0 10px;font-size:40px;line-height:1.15;font-weight:700;color:#fff}
+.bt-hero p{margin:0;font-size:19px;opacity:.95;max-width:720px}
+.bt-badges{margin-top:22px}
+.bt-badge{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);
+  border-radius:20px;padding:5px 14px;font-size:13px;margin:0 8px 8px 0}
+.bt-wrap h2{font-size:27px;margin:40px 0 6px;color:#1b1b2b;font-weight:700}
+.bt-wrap h2 + .bt-sub{margin:0 0 20px;color:#6a6a80;font-size:16px}
+.bt-wrap h3{font-size:18px;margin:24px 0 8px;color:#1b1b2b}
+.bt-grid{display:flex;flex-wrap:wrap;gap:16px;margin:20px 0}
+.bt-card{flex:1 1 300px;background:#fff;border:1px solid #e6e6ef;border-left:4px solid #1b4f8a;
+  border-radius:10px;padding:20px 22px}
+.bt-card h4{margin:0 0 8px;font-size:17px;color:#1b1b2b}
+.bt-card p{margin:0;font-size:15px;color:#55556a}
+.bt-note{background:#f6f6fb;border:1px solid #e6e6ef;border-radius:10px;padding:18px 22px;margin:22px 0}
+.bt-note strong{color:#1b1b2b}
+.bt-warn{background:#fff8ec;border:1px solid #f0d9ae;border-left:4px solid #e0a33e;
+  border-radius:10px;padding:18px 22px;margin:22px 0}
+.bt-wrap table{width:100%;border-collapse:collapse;margin:18px 0;font-size:15px}
+.bt-wrap th{text-align:left;background:#f6f6fb;padding:11px 14px;border-bottom:2px solid #e6e6ef;
+  font-weight:600;color:#1b1b2b}
+.bt-wrap td{padding:11px 14px;border-bottom:1px solid #eeeef5;vertical-align:top}
+.bt-wrap ul{margin:10px 0 10px 22px;padding:0}
+.bt-wrap li{margin:6px 0}
+.bt-shot{margin:26px 0;border:1px solid #e6e6ef;border-radius:10px;overflow:hidden}
+.bt-shot img{display:block;width:100%;height:auto}
+.bt-shot figcaption{background:#f6f6fb;padding:11px 16px;font-size:14px;color:#55556a;margin:0}
+.bt-foot{border-top:1px solid #e6e6ef;margin-top:44px;padding-top:22px;color:#6a6a80;font-size:15px}
+.bt-tech{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#f0f0f7;
+  border-radius:5px;padding:2px 7px;font-size:14px}
+</style>
+
+<div class="bt-wrap">
+
+<div class="bt-hero">
+  <h1>Utility Management</h1>
+  <p>Meter to cash for water, electricity, gas and internet providers — service accounts,
+     readings that get validated instead of trusted, tariffs that express real pricing,
+     and billing runs you approve before a single invoice exists.</p>
+  <div class="bt-badges">
+    <span class="bt-badge">Odoo 19.0</span>
+    <span class="bt-badge">Water · Electricity · Gas · Internet</span>
+    <span class="bt-badge">Tiered tariffs</span>
+    <span class="bt-badge">Billing runs with approval</span>
+    <span class="bt-badge">159 automated tests</span>
+  </div>
+</div>
+
+<h2>The service account is the spine</h2>
+<p>Not the customer, and not the meter. One customer can hold several accounts —
+   electricity and water, or two premises — each with its own location, tariff, billing
+   cycle, deposit, balance and connection status
+   (<em>pending, active, suspended, disconnected, closed, transferred</em>).</p>
+<p>Meters attach to accounts, and every installation, replacement and removal is kept as
+   history: who fitted it, when, at what reading, and why. Replacing a meter closes the
+   old one at its final reading and opens the new one at its initial reading in a single
+   step, so consumption continuity survives.</p>
+
+<figure class="bt-shot"><img src="screenshot_dashboard.png" alt="The utility dashboard: meters, customers, revenue, collection rate and readings needing attention"/><figcaption>The utility dashboard: meters, customers, revenue, collection rate and readings needing attention</figcaption></figure>
+
+<h2>What it does</h2>
+<div class="bt-grid"><div class="bt-card"><h4>Service accounts</h4><p>Account number, service location with coordinates, connection status, tariff, billing cycle, deposit, balance and full invoice and payment history.</p></div><div class="bt-card"><h4>Meters and their history</h4><p>Type, manufacturer, model, installation date, opening reading, digit count, communication type, calibration and inspection dates — plus every installation and replacement as a dated record.</p></div><div class="bt-card"><h4>Readings</h4><p>Actual, estimated, customer-supplied, remote, opening, closing, replacement and corrected — each validated on save against nine different checks.</p></div><div class="bt-card"><h4>Tariffs</h4><p>Flat or tiered with validated blocks, standing charges, taxes, effective dates, plus fees, penalties, discounts, subsidies and minimum/maximum charges.</p></div><div class="bt-card"><h4>Billing runs</h4><p>Compute, review against last month with warnings, approve, then invoice. Reproducible, and an account cannot be billed twice.</p></div><div class="bt-card"><h4>Bills and statements</h4><p>A proper utility bill PDF with previous and current reading, consumption and tariff breakdown — and an account statement as a running ledger.</p></div></div>
+
+<h2>Readings are validated, not trusted</h2>
+<p>Every reading is checked when it is saved, and <strong>flagged rather than refused</strong>:</p>
+<table><tr><th>Status</th><th>What it means</th></tr><tr><td>Normal</td><td>Nothing unusual.</td></tr><tr><td>Review required</td><td>Abnormally high or low, zero consumption, a duplicate, or read outside the expected window.</td></tr><tr><td>Estimated</td><td>Not an actual read — the account's estimation method was used.</td></tr><tr><td>Invalid</td><td>Cannot be used for billing.</td></tr><tr><td>Suspected tampering</td><td>The pattern suggests interference.</td></tr></table>
+<div class="bt-note">
+  <strong>A reading lower than the last one is recorded, not rejected.</strong> Rollover,
+  a replaced meter and a mis-keyed dial are all real. Software that refuses to store the
+  reading does not prevent the problem — it just means the field team writes it on paper.
+  With the meter's digit count set, rollover is calculated properly and flagged on the bill.
+</div>
+<p>Exceptions go to a review queue. Only billing and manager roles can approve or correct
+   one, and every correction is tracked.</p>
+
+<h2>Estimated bills that get corrected</h2>
+<p>When a meter cannot be read, the account's estimation method applies — previous period,
+   three or six month average, same period last year, or a configured minimum. Estimated
+   bills are labelled as such on the PDF.</p>
+<p>When a real reading finally arrives after estimates have already been
+   <strong>invoiced</strong>, the difference is carried onto the next bill as an explicit
+   adjustment line that references the invoices it corrects. Most systems quietly leave
+   that money wrong.</p>
+
+<h2>Tariffs that express real pricing</h2>
+<ul>
+  <li><strong>Flat or tiered</strong>, with blocks that must be contiguous and
+      non-overlapping — a mis-ordered block set is refused rather than silently
+      mis-billing.</li>
+  <li>Standing charge, taxes and effective dates.</li>
+  <li><strong>Fees, penalties, discounts, subsidies, minimum and maximum charges</strong>
+      as configurable charge lines, so local pricing rules stay configuration instead of
+      code.</li>
+</ul>
+
+<figure class="bt-shot"><img src="screenshot_billing_run.png" alt="A billing run under review, with its comparison warnings, before any invoice is created"/><figcaption>A billing run under review, with its comparison warnings, before any invoice is created</figcaption></figure>
+
+<h2>Billing you approve before it exists</h2>
+<p>Billing goes through a <strong>run</strong>, never straight from readings — so a bad
+   month is caught before any invoice does.</p>
+<ol>
+  <li><strong>Compute</strong> — one line per service account: readings used, consumption,
+      whether it was estimated, the charge breakdown, the amount.</li>
+  <li><strong>Review</strong> — the run compares itself against the previous one and warns
+      about billing down more than 30%, unusual consumption, a high count of estimates,
+      zero-consumption meters and a high count of adjustments.</li>
+  <li><strong>Approve</strong> — the period locks; its readings can no longer be edited.</li>
+  <li><strong>Invoice</strong> — real Odoo invoices, dated at period end, due dates from
+      your payment terms.</li>
+</ol>
+<p>Recomputing a draft run is <strong>idempotent</strong>: same inputs, same lines, no
+   duplicate invoices. One line per account per run means an account cannot be billed twice.</p>
+
+<h2>Documents and notifications</h2>
+<div class="bt-grid"><div class="bt-card"><h4>Utility bill (PDF)</h4><p>Account, period, previous and current reading, consumption, tariff breakdown, fixed charges, taxes, previous balance and amount due.</p></div><div class="bt-card"><h4>Account statement (PDF)</h4><p>The ledger a customer asks for: date, transaction, debit, credit, running balance.</p></div><div class="bt-card"><h4>Customer notifications</h4><p>Invoice issued, payment received, overdue notice, meter-reading reminder and estimated-bill notice, with a channel preference per account and a log of everything sent.</p></div></div>
+
+<h2>Who does what</h2>
+<table><tr><th>Role</th><th>Can do</th></tr><tr><td>Field Technician</td><td>Record meter readings, install and replace meters.</td></tr><tr><td>Billing Specialist</td><td>Everything above, plus review reading exceptions, run billing, issue invoices and statements.</td></tr><tr><td>Utility Manager</td><td>Full access — tariffs, billing cycles, approving runs, corrections and write-offs.</td></tr></table>
+
+<h2>What you install</h2>
+<table><tr><th>Technical name</th><th>What it is</th></tr><tr><td><span class="bt-tech">utility_management</span></td><td>Utility Management — the complete app. Everything on this page is in this one module.</td></tr></table>
+
+<h2>Requirements</h2>
+<ul>
+  <li>Odoo <strong>19.0</strong>, Community or Enterprise.</li>
+  <li><strong>Accounting configured</strong> — a chart of accounts, a sales journal and
+      your tax rates. Billing posts real invoices, so this needs to be right before your
+      first run.</li>
+</ul>
+<div class="bt-warn">
+  <strong>Scheduled billing ships switched on.</strong> The daily action creates
+  <em>draft</em> invoices for accounts whose cycle is due, and contacts nobody. On a
+  database with real customers, confirm your tariffs and cycles first — the README shows
+  how to hold it until you are ready.
+</div>
+
+<h2>Honest about scope</h2>
+<p>So you know before you buy. Not included in this version: a customer self-service
+   portal, mobile/offline meter reading with routes, collections and
+   disconnection/reconnection workflow, and GIS mapping. Coordinates are stored but not
+   yet displayed on a map.</p>
+
+<h2>Tested, and you can check</h2>
+<p><strong>159 automated checks</strong> ship inside the module under
+   <span class="bt-tech">tests/</span> — six suites covering service accounts, reading
+   validation, tariff charges, billing runs, reports and dashboard, and notifications.
+   Every suite rolls its transaction back, so you can run them on your own database:</p>
+<p><span class="bt-tech">odoo shell -d yourdb --no-http &lt; tests/p1_service_account_check.py</span></p>
+<p>A full <span class="bt-tech">README.md</span> ships with the module: install, roles, the
+   order to set things up in, and everyday use.</p>
+
+<div class="bt-foot">
+  <p><strong>B&amp;T Solutions</strong> &nbsp;·&nbsp; support@bandtsolutions.com
+     &nbsp;·&nbsp; bandtsolutions.com</p>
+  <p>Licence OPL-1. Version 19.0.1.3.0.</p>
+</div>
+</div>
