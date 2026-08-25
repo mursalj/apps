@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Pharmacy Management',
-    'version': '19.0.3.0.0',  # Clinical safety, returns, expiry control, compliance, insurance
+    'version': '19.0.3.0.1',  # Pharmacy fields no longer break non-pharmacy product screens
     'summary': 'Retail and wholesale pharmacy: medicines, supplements, prescriptions, '
                'suppliers, wholesale credit control and expiry management',
     'description': """

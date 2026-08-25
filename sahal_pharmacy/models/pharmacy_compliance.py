@@ -298,4 +298,7 @@ class ProductTemplate(models.Model):
 
     pharma_manufacturer_id = fields.Many2one(
         'pharmacy.manufacturer', string='Manufacturer (Licensed)',
+        # See PHARMACY_ROLES in product_template.py: product.template is shared by every
+        groups='sahal_pharmacy.group_pharmacy_cashier,'
+               'sahal_pharmacy.group_pharmacy_auditor',
         help='The licensed manufacturer record, as opposed to the free contact link.')

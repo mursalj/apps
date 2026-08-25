@@ -200,6 +200,69 @@ for method in ('async pharmacyCheckProduct(', 'async pharmacyWarnExpiry(',
 else:
     check("every patched method checks the gate", True)
 
+# ------------------------------------------- the product form, in a non-pharmacy shop
+# product.template is shared by every business on the platform, but the pharmacy
+# reference models are readable only by pharmacy staff. A pharmacy field left unguarded
+# therefore breaks the PRODUCT SCREEN for a hardware shop, which is how an electronics
+# retailer hit "You are not allowed to access 'Active Ingredient'" while opening their
+# own catalogue.
+#
+# An x2many is the dangerous case: reading one checks access on its comodel even when it
+# is empty, so it fails for every product. A many2one only checks when it holds a value,
+# so it hides until someone fills it in - which is why this asserts on ALL of them
+# rather than on the one that happened to be reported.
+print("\n-- Pharmacy fields must not break a non-pharmacy shop's products ----")
+
+Product = env['product.template']
+pharmacy_relations = sorted(
+    name for name, field in Product._fields.items()
+    if (field.comodel_name or '').startswith('pharmacy.'))
+check("there are pharmacy relations on product.template to guard",
+      bool(pharmacy_relations), pharmacy_relations)
+
+unguarded = [n for n in pharmacy_relations if not Product._fields[n].groups]
+check("every pharmacy relation on product.template is group-restricted",
+      not unguarded, unguarded)
+
+cashier = env.ref('sahal_pharmacy.group_pharmacy_cashier')
+auditor = env.ref('sahal_pharmacy.group_pharmacy_auditor')
+outsider = env['res.users'].sudo().create({
+    'name': 'PH5 Hardware Shop User', 'login': 'ph5.hardware@example.invalid',
+    'group_ids': [(6, 0, [env.ref('base.group_user').id,
+                          env.ref('stock.group_stock_user').id])],
+})
+check("the probe user really has no pharmacy role",
+      cashier not in outsider.all_group_ids and auditor not in outsider.all_group_ids)
+
+# The form they open is the stock Odoo one, with this module's inherit applied on top.
+form = env.ref('product.product_template_form_view')
+arch = Product.with_user(outsider).get_view(form.id, 'form')['arch']
+leaked = [n for n in pharmacy_relations if 'name="%s"' % n in arch]
+check("no pharmacy relation reaches their product form", not leaked, leaked)
+
+offered = Product.with_user(outsider).fields_get()
+check("and none is offered to them through fields_get",
+      not [n for n in pharmacy_relations if n in offered],
+      [n for n in pharmacy_relations if n in offered])
+
+# The read the web client actually performs when opening a product.
+probe = env['product.template'].sudo().create({'name': 'PH5 Screwdriver'})
+try:
+    probe.with_user(outsider).web_read({'name': {}, 'default_code': {}, 'list_price': {}})
+    check("they can open a product without an Access Error", True)
+except Exception as exc:                                          # noqa: BLE001
+    check("they can open a product without an Access Error", False, str(exc)[:90])
+
+# ...while a pharmacist still gets the whole thing.
+pharmacist = env['res.users'].sudo().create({
+    'name': 'PH5 Pharmacist', 'login': 'ph5.pharmacist@example.invalid',
+    'group_ids': [(6, 0, [env.ref('base.group_user').id, cashier.id])],
+})
+pharmacy_arch = Product.with_user(pharmacist).get_view(form.id, 'form')['arch']
+check("a pharmacy user still sees the pharmaceutical attributes",
+      any('name="%s"' % n in pharmacy_arch for n in pharmacy_relations),
+      [n for n in pharmacy_relations if 'name="%s"' % n in pharmacy_arch])
+
 print("\nPH5 POS ISOLATION: %d PASS / %d FAIL" % (PASS, FAIL))
 env.cr.rollback()
 print("rolled back")

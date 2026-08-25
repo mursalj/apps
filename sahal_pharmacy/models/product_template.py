@@ -74,6 +74,25 @@ CONTROLLED_SCHEDULES = [
 ]
 
 
+# Every pharmacy ROLE, as one groups= string.
+#
+# It has to go on any product.template field whose comodel is a pharmacy model, because
+# product.template is shared by everyone on the platform while the pharmacy reference
+# models are readable only by pharmacy staff. Without it, opening an ordinary product
+# raises "You are not allowed to access 'Active Ingredient'" at a shop that has nothing
+# to do with medicines.
+#
+# An x2many is the dangerous case: reading one always checks access on the comodel, even
+# when it is empty, so it breaks for EVERY product. A many2one only checks when it holds
+# a value, which is why a hardware shop hit active_ingredient_ids first and would have
+# hit dosage_form_id the day someone filled it in.
+#
+# cashier covers technician, pharmacist and manager through implied_ids; auditor is
+# deliberately outside that chain, so both are named.
+PHARMACY_ROLES = ('sahal_pharmacy.group_pharmacy_cashier,'
+                  'sahal_pharmacy.group_pharmacy_auditor')
+
+
 class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
@@ -120,9 +139,10 @@ class ProductTemplate(models.Model):
     # which a Selection cannot do without a code change and a deploy.
     dosage_form = fields.Selection(DOSAGE_FORMS, string='Dosage Form (legacy)')
     dosage_form_id = fields.Many2one('pharmacy.dosage.form', string='Dosage Form',
-                                     index=True)
+                                     index=True, groups=PHARMACY_ROLES)
     route_id = fields.Many2one('pharmacy.administration.route',
-                               string='Route of Administration')
+                               string='Route of Administration',
+                               groups=PHARMACY_ROLES)
     strength = fields.Char('Strength', compute='_compute_strength', store=True,
                            readonly=False,
                            help='Printed on labels and bills. Computed from the value '
@@ -135,11 +155,11 @@ class ProductTemplate(models.Model):
         'Concentration', help='For liquids and injectables, e.g. 100 IU/mL.')
     active_ingredient_ids = fields.Many2many(
         'pharmacy.active.ingredient', 'product_active_ingredient_rel', 'product_id',
-        'ingredient_id', string='Active Ingredients',
+        'ingredient_id', string='Active Ingredients', groups=PHARMACY_ROLES,
         help='What the product actually contains. Drives allergy screening and '
              'equivalence - a brand name cannot.')
     generic_id = fields.Many2one(
-        'pharmacy.generic', string='Generic', index=True,
+        'pharmacy.generic', string='Generic', index=True, groups=PHARMACY_ROLES,
         help='The generic this product is a brand of. Products sharing a generic are '
              'candidates for substitution.')
     atc_code = fields.Char('ATC Code', index=True)
