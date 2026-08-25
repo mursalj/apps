@@ -24,7 +24,7 @@ env.user.group_ids = [(4, env.ref('utility_management.group_utility_manager').id
 Notification = env['utility.notification']
 
 partner = env['res.partner'].create({
-    'name': 'P6 Customer', 'email': 'p6.customer@example.invalid', 'phone': '+252611000000'})
+    'name': 'P6 Customer', 'email': 'p6.customer@example.invalid', 'phone': '+15550100'})
 silent = env['res.partner'].create({'name': 'P6 Silent Customer'})
 tariff = env['utility.tariff'].create({
     'name': 'P6 Flat', 'utility_type': 'gas', 'structure': 'flat', 'flat_rate': 1.0})
