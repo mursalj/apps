@@ -136,16 +136,26 @@
                   decoration-warning="state == 'to_verify'"
                   decoration-muted="state in ('cancelled', 'expired')">
                 <field name="name"/>
-                <field name="prescription_date"/>
+                <!-- Short column labels on purpose. The field labels ("Prescription Date",
+                     "Contains Controlled Drug") are right on a form, where there is room
+                     for them, but a list column is only as wide as its content: they were
+                     being cut to "Prescription..." and "Contains Co...", which is exactly
+                     the header a buyer sees first. `string` here renames the column only;
+                     the form and the search view keep the full label. -->
+                <field name="prescription_date" string="Prescribed"/>
                 <field name="patient_id"/>
                 <field name="doctor_id"/>
                 <field name="valid_until" optional="show"/>
-                <field name="has_controlled" optional="show"/>
+                <field name="has_controlled" string="Controlled" optional="show"/>
                 <field name="refills_remaining" optional="hide"/>
                 <field name="dispense_count" optional="hide"/>
+                <!-- Every state that a pharmacist acts on carries a colour. Without the
+                     partially_dispensed decoration the commonest state on a busy counter
+                     was the one rendering as an unstyled grey badge. -->
                 <field name="state" widget="badge"
                        decoration-success="state == 'dispensed'"
                        decoration-info="state == 'verified'"
+                       decoration-primary="state == 'partially_dispensed'"
                        decoration-warning="state == 'to_verify'"/>
                 <field name="is_expired" column_invisible="1"/>
             </list>
